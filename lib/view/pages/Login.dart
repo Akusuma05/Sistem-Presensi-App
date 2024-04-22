@@ -96,33 +96,36 @@ class _LoginState extends State<Login> {
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (ctrlPass.text.toString() == "" ||
-                              ctrlEmail.text.toString() == "") {
-                            showDialog(
-                                context: context,
-                                builder: ((((context) {
-                                  return AlertDialog(
-                                    title: Text(
-                                      "There is an Error!",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                    content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            "Please fill in the blanks!",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 145, 145, 145)),
-                                          ),
-                                        ]),
-                                  );
-                                }))));
-                          } else {
-                            // PostLogin();
-                          }
+                          // if (ctrlPass.text.toString() == "" ||
+                          //     ctrlEmail.text.toString() == "") {
+                          //   showDialog(
+                          //       context: context,
+                          //       builder: ((((context) {
+                          //         return AlertDialog(
+                          //           title: Text(
+                          //             "There is an Error!",
+                          //             textAlign: TextAlign.center,
+                          //             style: TextStyle(color: Colors.red),
+                          //           ),
+                          //           content: Column(
+                          //               mainAxisSize: MainAxisSize.min,
+                          //               children: [
+                          //                 Text(
+                          //                   "Please fill in the blanks!",
+                          //                   textAlign: TextAlign.center,
+                          //                   style: TextStyle(
+                          //                       color: Color.fromARGB(
+                          //                           255, 145, 145, 145)),
+                          //                 ),
+                          //               ]),
+                          //         );
+                          //       }))));
+                          // } else {
+                          //   // PostLogin();
+                          // }
+
+                          Navigator.pushReplacement(this.context,
+                              MaterialPageRoute(builder: (context) => Home()));
                         },
                         child: const Text(
                           'LOGIN',
