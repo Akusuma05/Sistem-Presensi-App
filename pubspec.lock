@@ -91,6 +91,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.6"
+  lazy_loading_list:
+    dependency: "direct main"
+    description:
+      name: lazy_loading_list
+      sha256: a9bb5598ec57fd831309ea20cb0bcc234de099945a8045aab42d84c591b6f10d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   leak_tracker:
     dependency: transitive
     description:

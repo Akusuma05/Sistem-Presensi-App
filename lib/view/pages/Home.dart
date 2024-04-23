@@ -9,6 +9,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
+  final List<String> classList = ["Math", "Physics"]; // Use a specific type
 
   @override
   Widget build(BuildContext context) {
@@ -17,25 +18,36 @@ class _HomeState extends State<Home> {
         children: [
           SafeArea(
             child: Column(
-              children: [_buildUserInfo(), _bottomSheet()],
+              children: [
+                _buildUserInfo(),
+                _bottomSheet(),
+              ],
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text(
+          "ADD CLASS",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+        onPressed: () {}, // Implement functionality
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
-  Padding _buildUserInfo() {
-    return Padding(
-      padding: const EdgeInsets.only(
-          bottom: 32, top: 16, left: 8, right: 8), // Add this line
+  Container _buildUserInfo() {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 32, top: 32, left: 16, right: 8),
       child: Row(
         children: [
           Icon(
             FeatherIcons.user,
             size: 40,
           ),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -43,13 +55,13 @@ class _HomeState extends State<Home> {
                 "Good Morning Angelo",
                 textAlign: TextAlign.left,
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Text(
                 "070601201026",
                 textAlign: TextAlign.left,
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -61,22 +73,40 @@ class _HomeState extends State<Home> {
         decoration: BoxDecoration(
           color: Colors.grey[300],
           border: Border.all(color: Colors.transparent),
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0), // Add this line
+            Container(
+              padding: const EdgeInsets.fromLTRB(22, 16, 8, 0),
               child: Text(
                 "Classes",
                 textAlign: TextAlign.left,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 15,
+                  fontSize: 16,
                 ),
+              ),
+            ),
+            Flexible(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                itemCount: classList.length,
+                itemBuilder: (context, index) {
+                  return LazyLoadingList(
+                    initialSizeOfItems: 10,
+                    loadMore: () {},
+                    child: ClassCard(classList[index]),
+                    index: index,
+                    hasMore: true,
+                  );
+                },
               ),
             ),
           ],
@@ -97,7 +127,7 @@ class _HomeState extends State<Home> {
       },
       destinations: const [
         NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-        NavigationDestination(icon: Icon(Icons.person), label: "Profile")
+        NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
       ],
     );
   }
