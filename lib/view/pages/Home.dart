@@ -32,7 +32,10 @@ class _HomeState extends State<Home> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
-        onPressed: () {}, // Implement functionality
+        onPressed: () {
+          Navigator.pushReplacement(this.context,
+              MaterialPageRoute(builder: (context) => AddKelas()));
+        }, // Implement functionality
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );

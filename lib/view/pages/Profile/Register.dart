@@ -1,4 +1,4 @@
-part of 'Pages.dart';
+part of '../Pages.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
