@@ -8,92 +8,92 @@ class AddAbsensi extends StatefulWidget {
 }
 
 class _AddAbsensiState extends State<AddAbsensi> with WidgetsBindingObserver {
-  CameraController? _controller;
-  bool _isCameraInitialized = false;
-  late final List<CameraDescription> _cameras;
-  bool _isRecording = false;
-
-  Future<void> initCamera() async {
-    _cameras = await availableCameras();
-    // Initialize the camera with the first camera in the list
-    await onNewCameraSelected(_cameras.first);
-  }
-
-  Future<void> onNewCameraSelected(CameraDescription description) async {
-    final previousCameraController = _controller;
-
-    // Instantiating the camera controller
-    final CameraController cameraController = CameraController(
-      description,
-      ResolutionPreset.high,
-      imageFormatGroup: ImageFormatGroup.jpeg,
-    );
-
-    // Initialize controller
-    try {
-      await cameraController.initialize();
-    } on CameraException catch (e) {
-      debugPrint('Error initializing camera: $e');
-    }
-    // Dispose the previous controller
-    await previousCameraController?.dispose();
-
-    // Replace with the new controller
-    if (mounted) {
-      setState(() {
-        _controller = cameraController;
-      });
-    }
-
-    // Update UI if controller updated
-    cameraController.addListener(() {
-      if (mounted) setState(() {});
-    });
-
-    // Update the Boolean
-    if (mounted) {
-      setState(() {
-        _isCameraInitialized = _controller!.value.isInitialized;
-      });
-    }
-  }
+  late CameraController cameraController;
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cameraController = _controller;
-
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive) {
-      // Free up memory when camera not active
-      cameraController.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      // Reinitialize the camera with same properties
-      onNewCameraSelected(cameraController.description);
-    }
+  void initState() {
+    super.initState();
+    cameraController = CameraController(cameras[0], ResolutionPreset.max);
+    cameraController.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            print("access was denied");
+            break;
+          default:
+            print(e.description);
+            break;
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isCameraInitialized) {
-      return SafeArea(
-          child: Scaffold(
-              body: Column(children: [
-        CameraPreview(_controller!),
-      ])));
-    } else {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
+    return Scaffold(
+      body: Stack(
+        children: [
+          Container(
+            height: double.infinity,
+            child: CameraPreview(cameraController),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 50.0), // Adjust as needed
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(bottom: 30.0), // Adjust as needed
+                child: InkWell(
+                  onTap: () async {
+                    if (!cameraController.value.isInitialized) {
+                      return null;
+                    }
+                    if (cameraController.value.isTakingPicture) {
+                      return null; // Prevent multiple captures while processing
+                    }
+                    try {
+                      await cameraController.setFlashMode(FlashMode.off);
+                      XFile picture = await cameraController.takePicture();
+                      // Navigate to ImagePreview screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ImagePreview(picture),
+                        ),
+                      );
+                    } on CameraException catch (e) {
+                      debugPrint("Error occured while taking picture : $e");
+                      return null;
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(50.0),
+                  // Set highlight and splash color for visual feedback
+                  highlightColor: Colors.redAccent.withOpacity(0.7),
+                  splashColor: Colors.redAccent.withOpacity(0.3),
+                  child: Container(
+                    width: 80.0,
+                    height: 80.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.redAccent,
+                    ),
+                    child: Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
