@@ -1,14 +1,15 @@
 part of "Widgets.dart";
 
-class ClassCard extends StatefulWidget {
-  final String ClassName;
-  const ClassCard(this.ClassName);
+class AbsensiCard extends StatefulWidget {
+  final String date;
+  final String time;
+  const AbsensiCard(this.date, this.time);
 
   @override
-  _ClassCardState createState() => _ClassCardState();
+  _AbsensiCardState createState() => _AbsensiCardState();
 }
 
-class _ClassCardState extends State<ClassCard> {
+class _AbsensiCardState extends State<AbsensiCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,10 +20,8 @@ class _ClassCardState extends State<ClassCard> {
         elevation: 0,
         child: InkWell(
             onTap: () {
-              Navigator.push(
-                  this.context,
-                  MaterialPageRoute(
-                      builder: (context) => KelasView(widget.ClassName)));
+              Navigator.push(this.context,
+                  MaterialPageRoute(builder: (context) => EditAbsensi()));
             },
             child: Container(
               padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
@@ -38,14 +37,14 @@ class _ClassCardState extends State<ClassCard> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          widget.ClassName,
+                          widget.date,
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87),
                         ),
                         Text(
-                          "Class 701",
+                          widget.time,
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

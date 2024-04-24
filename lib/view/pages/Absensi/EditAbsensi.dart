@@ -10,6 +10,21 @@ class EditAbsensi extends StatefulWidget {
 class _EditAbsensiState extends State<EditAbsensi> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        leading: Builder(builder: (BuildContext context) {
+          return IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: new Icon(Icons.arrow_back_ios_rounded));
+        }),
+        title: Text(
+          "Edit Absensi",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+    );
   }
 }

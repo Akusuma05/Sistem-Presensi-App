@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:lazy_loading_list/lazy_loading_list.dart';
 import 'package:sistem_presensi_app/view/widgets/Widgets.dart';

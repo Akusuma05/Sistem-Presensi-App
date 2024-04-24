@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
         ),
         backgroundColor: Colors.black,
         onPressed: () {
-          Navigator.pushReplacement(this.context,
+          Navigator.push(this.context,
               MaterialPageRoute(builder: (context) => AddKelas()));
         }, // Implement functionality
       ),
