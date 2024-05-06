@@ -1,16 +1,34 @@
 part of '../Pages.dart';
 
 class AbsensiView extends StatefulWidget {
-  final String StudentName;
-  const AbsensiView(this.StudentName);
+  final Mahasiswa mahasiswa;
+  final int Kelas_Id;
+  const AbsensiView(this.mahasiswa, this.Kelas_Id);
 
   @override
   _AbsensiViewState createState() => _AbsensiViewState();
 }
 
 class _AbsensiViewState extends State<AbsensiView> {
-  final List<String> DateList = ["11/12/23", "12/12/23"];
-  final List<String> TimeList = ["00.00", "12.00"]; // Use a specific type
+  List<dynamic> list = [];
+  Future<dynamic> getAbsensi() async {
+    await ApiServices.getAbsensibyId(
+            widget.Kelas_Id, widget.mahasiswa.Mahasiswa_Id)
+        .then((value) {
+      setState(() {
+        list = value;
+      });
+    });
+    print(list.toString());
+  }
+
+  @override
+  void initState() {
+    getAbsensi();
+    super.initState();
+  }
+
+  // Use a specific type
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +43,7 @@ class _AbsensiViewState extends State<AbsensiView> {
               icon: new Icon(Icons.arrow_back_ios_rounded));
         }),
         title: Text(
-          widget.StudentName,
+          widget.mahasiswa.Mahasiswa_Nama,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -56,13 +74,12 @@ class _AbsensiViewState extends State<AbsensiView> {
                       child: ListView.builder(
                         scrollDirection: Axis.vertical,
                         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        itemCount: DateList.length,
+                        itemCount: list.length,
                         itemBuilder: (context, index) {
                           return LazyLoadingList(
                             initialSizeOfItems: 10,
                             loadMore: () {},
-                            child:
-                                AbsensiCard(DateList[index], TimeList[index]),
+                            child: AbsensiCard(list[index]),
                             index: index,
                             hasMore: true,
                           );
@@ -83,8 +100,10 @@ class _AbsensiViewState extends State<AbsensiView> {
         ),
         backgroundColor: Colors.black,
         onPressed: () {
-          Navigator.push(this.context,
-              MaterialPageRoute(builder: (context) => AddAbsensi()));
+          Navigator.push(
+              this.context,
+              MaterialPageRoute(
+                  builder: (context) => AddAbsensi(widget.Kelas_Id)));
         }, // Implement functionality
       ),
     );

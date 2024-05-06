@@ -1,8 +1,8 @@
 part of "Widgets.dart";
 
 class ClassCard extends StatefulWidget {
-  final String ClassName;
-  const ClassCard(this.ClassName);
+  final Kelas kelas;
+  const ClassCard(this.kelas);
 
   @override
   _ClassCardState createState() => _ClassCardState();
@@ -22,7 +22,7 @@ class _ClassCardState extends State<ClassCard> {
               Navigator.push(
                   this.context,
                   MaterialPageRoute(
-                      builder: (context) => KelasView(widget.ClassName)));
+                      builder: (context) => KelasView(widget.kelas)));
             },
             child: Container(
               padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
@@ -38,14 +38,14 @@ class _ClassCardState extends State<ClassCard> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          widget.ClassName,
+                          widget.kelas.Kelas_Nama,
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87),
                         ),
                         Text(
-                          "Class 701",
+                          widget.kelas.Kelas_Lokasi,
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

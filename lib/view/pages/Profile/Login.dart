@@ -124,8 +124,10 @@ class _LoginState extends State<Login> {
                           //   // PostLogin();
                           // }
 
-                          Navigator.pushReplacement(this.context,
-                              MaterialPageRoute(builder: (context) => Home()));
+                          Navigator.pushReplacement(
+                              this.context,
+                              MaterialPageRoute(
+                                  builder: (context) => Homepage()));
                         },
                         child: const Text(
                           'LOGIN',

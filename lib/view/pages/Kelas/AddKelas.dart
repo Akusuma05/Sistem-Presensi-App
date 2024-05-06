@@ -10,6 +10,48 @@ class AddKelas extends StatefulWidget {
 class _AddKelasState extends State<AddKelas> {
   final ctrlName = TextEditingController();
   final ctrlLocation = TextEditingController();
+  List<Mahasiswa> MahasiswaList = [];
+  List<Mahasiswa> SelectedMahasiswaList = [];
+  List<Kelas> KelasBaru = [];
+
+  @override
+  void dispose() {
+    ctrlName.dispose();
+    ctrlLocation.dispose();
+    SelectedMahasiswaList = [];
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    GetMahasiswa();
+    super.initState();
+  }
+
+  Future<dynamic> InputKelas() async {
+    dynamic response = true;
+    await ApiServices.setKelas(
+            ctrlName.text.toString(), ctrlLocation.text.toString())
+        .then((value) async {
+      // mark this function as async
+      for (var i = 0; i < SelectedMahasiswaList.length; i++) {
+        await ApiServices.setKelasMahasiswa(
+            value[0].Kelas_Id, SelectedMahasiswaList[i].Mahasiswa_Id);
+      }
+      var key = GlobalKey<_HomeState>();
+      Navigator.pushReplacement(this.context,
+          MaterialPageRoute(builder: (context) => Home(key: key)));
+    });
+    return response;
+  }
+
+  Future<void> GetMahasiswa() async {
+    await ApiServices.getMahasiswa().then((value) {
+      setState(() {
+        MahasiswaList = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +129,20 @@ class _AddKelasState extends State<AddKelas> {
                           ),
 
                           SizedBox(
+                            height: 16,
+                          ),
+
+                          MultiSelectDialogField(
+                            items: MahasiswaList.map(
+                                    (e) => MultiSelectItem(e, e.Mahasiswa_Nama))
+                                .toList(),
+                            listType: MultiSelectListType.CHIP,
+                            onConfirm: (values) {
+                              SelectedMahasiswaList = values;
+                            },
+                          ),
+
+                          SizedBox(
                             height: 32,
                           ),
                           ElevatedButton(
@@ -107,7 +163,23 @@ class _AddKelasState extends State<AddKelas> {
                                       );
                                     }))));
                               } else {
-                                Navigator.pop(context);
+                                if (InputKelas() != null) {
+                                  Fluttertoast.showToast(
+                                      msg: "Kelas Berhasil Ditambahkan",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.green,
+                                      textColor: Colors.white,
+                                      fontSize: 14);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Penambahan Kelas Gagal",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 14);
+                                }
                               }
                             },
                             child: const Text(

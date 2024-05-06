@@ -1,15 +1,14 @@
 part of "Widgets.dart";
 
-class StudentCard extends StatefulWidget {
+class MahasiswaCard extends StatefulWidget {
   final Mahasiswa mahasiswa;
-  final int Kelas_id;
-  const StudentCard(this.mahasiswa, this.Kelas_id);
+  const MahasiswaCard(this.mahasiswa);
 
   @override
-  _StudentCardState createState() => _StudentCardState();
+  _MahasiswaCardState createState() => _MahasiswaCardState();
 }
 
-class _StudentCardState extends State<StudentCard> {
+class _MahasiswaCardState extends State<MahasiswaCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -20,11 +19,8 @@ class _StudentCardState extends State<StudentCard> {
         elevation: 0,
         child: InkWell(
           onTap: () {
-            Navigator.push(
-                this.context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        AbsensiView(widget.mahasiswa, widget.Kelas_id)));
+            Navigator.push(this.context,
+                MaterialPageRoute(builder: (context) => MahasiswaDetails()));
           },
           child: Container(
             padding: EdgeInsets.fromLTRB(16, 8, 0, 8),

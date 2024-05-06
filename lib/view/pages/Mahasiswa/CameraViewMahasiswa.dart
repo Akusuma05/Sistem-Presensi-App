@@ -10,6 +10,6 @@ class CameraViewMahasiswa extends StatefulWidget {
 class _CameraViewMahasiswaState extends State<CameraViewMahasiswa> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold();
   }
 }

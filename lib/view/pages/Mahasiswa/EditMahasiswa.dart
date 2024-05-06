@@ -1,7 +1,8 @@
 part of '../Pages.dart';
 
 class EditMahasiswa extends StatefulWidget {
-  const EditMahasiswa({Key? key}) : super(key: key);
+  final Mahasiswa mahasiswa;
+  const EditMahasiswa(this.mahasiswa);
 
   @override
   _EditMahasiswaState createState() => _EditMahasiswaState();

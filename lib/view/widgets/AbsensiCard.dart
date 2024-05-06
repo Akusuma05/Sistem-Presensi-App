@@ -1,9 +1,8 @@
 part of "Widgets.dart";
 
 class AbsensiCard extends StatefulWidget {
-  final String date;
-  final String time;
-  const AbsensiCard(this.date, this.time);
+  final Absensi absensi;
+  const AbsensiCard(this.absensi);
 
   @override
   _AbsensiCardState createState() => _AbsensiCardState();
@@ -12,6 +11,8 @@ class AbsensiCard extends StatefulWidget {
 class _AbsensiCardState extends State<AbsensiCard> {
   @override
   Widget build(BuildContext context) {
+    Absensi a = widget.absensi;
+
     return Container(
       child: Card(
         color: Colors.white,
@@ -37,14 +38,14 @@ class _AbsensiCardState extends State<AbsensiCard> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          widget.date,
+                          DateFormat('yMd').format(a.Absensi_Waktu),
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.black87),
                         ),
                         Text(
-                          widget.time,
+                          DateFormat('jms').format(a.Absensi_Waktu),
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

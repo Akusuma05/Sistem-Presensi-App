@@ -1,14 +1,25 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:http/http.dart';
 import 'package:lazy_loading_list/lazy_loading_list.dart';
 import 'package:sistem_presensi_app/main.dart';
+import 'package:sistem_presensi_app/model/Kelas.dart';
+import 'package:sistem_presensi_app/model/KelasMahasiswa.dart';
+import 'package:sistem_presensi_app/model/Mahasiswa.dart';
 import 'package:sistem_presensi_app/view/widgets/Widgets.dart';
+import 'package:sistem_presensi_app/service/ApiServices.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 part 'Profile/Login.dart';
 part 'Profile/Register.dart';
@@ -26,3 +37,4 @@ part 'Mahasiswa/EditMahasiswa.dart';
 part 'Mahasiswa/MahasiswaDetails.dart';
 part 'Mahasiswa/MahasiswaView.dart';
 part 'Mahasiswa/CameraViewMahasiswa.dart';
+part 'Homepage.dart';
