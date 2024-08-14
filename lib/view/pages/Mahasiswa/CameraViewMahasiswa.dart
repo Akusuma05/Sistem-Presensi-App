@@ -8,8 +8,69 @@ class CameraViewMahasiswa extends StatefulWidget {
 }
 
 class _CameraViewMahasiswaState extends State<CameraViewMahasiswa> {
+  late CameraController cameraController; //Controller Camera
+  MahasiswaController mahasiswaController = MahasiswaController();
+
+  @override
+  void initState() {
+    initCamera();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    cameraController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    if (!cameraController.value.isInitialized) {
+      return Container();
+    }
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: CameraPreview(cameraController),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: FloatingActionButton(
+              backgroundColor: Colors.white,
+              child: const Icon(Icons.camera_alt),
+              onPressed: () async {
+                XFile? image = await cameraController.takePicture();
+                if (image != null) {
+                  await mahasiswaController.DeteksiMahasiswaTombol(
+                      image, this.context);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void initCamera() {
+    cameraController = CameraController(cameras[0], ResolutionPreset.max);
+    cameraController.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            print("access was denied");
+            break;
+          default:
+            print(e.description);
+            break;
+        }
+      }
+    });
   }
 }

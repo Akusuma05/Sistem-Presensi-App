@@ -10,6 +10,7 @@ class MahasiswaView extends StatefulWidget {
 class _MahasiswaViewState extends State<MahasiswaView> {
   List<Mahasiswa> mahasiswaList = [];
 
+  //Function Get Mahasiswa
   Future<void> getMahasiswa() async {
     await ApiServices.getMahasiswa().then((value) {
       setState(() {
@@ -19,6 +20,7 @@ class _MahasiswaViewState extends State<MahasiswaView> {
     print(mahasiswaList.toString());
   }
 
+  //Function Delete Mahasiswa
   Future<dynamic> DeleteMahasiswa(int Mahasiswa_Id) async {
     dynamic response = true;
 
@@ -45,6 +47,7 @@ class _MahasiswaViewState extends State<MahasiswaView> {
     return Scaffold(
       //App Bar
       appBar: AppBar(
+        //Tombol Back
         leading: Builder(builder: (BuildContext context) {
           return IconButton(
               onPressed: () {
@@ -52,6 +55,7 @@ class _MahasiswaViewState extends State<MahasiswaView> {
               },
               icon: new Icon(Icons.arrow_back_ios_rounded));
         }),
+        //Judul App Bar
         title: Text(
           "Mahasiswa",
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -59,88 +63,103 @@ class _MahasiswaViewState extends State<MahasiswaView> {
         centerTitle: true,
       ),
 
-      //Bottom Sheet
-      body: Column(
-        children: [
-          //Bottom Sheet
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(color: Colors.transparent),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              width: double.infinity,
+      //Body dengan drag down refresh
+      body: RefreshIndicator(
+        onRefresh: () => getMahasiswa(), //Function yang jalan saat Refresh
+        child: Column(
+          children: [
+            //Bottom Sheet
+            Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: RefreshIndicator(
-                        onRefresh: () => getMahasiswa(),
-                        child: ListView.builder(
-                          key: UniqueKey(),
-                          scrollDirection: Axis.vertical,
-                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                          itemCount: mahasiswaList.length,
-                          itemBuilder: (context, index) {
-                            return Slidable(
-                              key: ValueKey(mahasiswaList[index].Mahasiswa_Id),
-                              startActionPane: ActionPane(
-                                motion: const ScrollMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      print("Debug Index: " + index.toString());
-                                      print("Mahasiswa_Id" +
-                                          mahasiswaList[index]
-                                              .Mahasiswa_Id
-                                              .toString());
-                                      DeleteMahasiswa(
-                                        mahasiswaList[index].Mahasiswa_Id,
-                                      );
-                                    },
-                                    backgroundColor: Color(0xFFFE4A49),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: "Delete",
-                                  ),
-                                  SlidableAction(
-                                    onPressed: (context) => Navigator.push(
-                                        this.context,
-                                        MaterialPageRoute(
-                                            builder: (context) => EditMahasiswa(
-                                                mahasiswaList[index]))),
-                                    backgroundColor: Color(0xFF21B7CA),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.edit,
-                                    label: "Edit",
-                                  ),
-                                ],
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  border: Border.all(color: Colors.transparent),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                width: double.infinity,
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //Card List Mahasiswa
+                      Flexible(
+                        //Apabila List Kosong
+                        child: mahasiswaList.isEmpty
+                            ? Center(
+                                child:
+                                    CircularProgressIndicator()) //Animasi Loading Bulat
+                            //Card List Builder
+                            : ListView.builder(
+                                key: UniqueKey(),
+                                scrollDirection: Axis.vertical,
+                                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                                itemCount: mahasiswaList.length,
+                                itemBuilder: (context, index) {
+                                  return Slidable(
+                                    key: ValueKey(
+                                        mahasiswaList[index].Mahasiswa_Id),
+                                    startActionPane: ActionPane(
+                                      motion: const ScrollMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            print("Debug Index: " +
+                                                index.toString());
+                                            print("Mahasiswa_Id" +
+                                                mahasiswaList[index]
+                                                    .Mahasiswa_Id
+                                                    .toString());
+                                            DeleteMahasiswa(
+                                              mahasiswaList[index].Mahasiswa_Id,
+                                            );
+                                          },
+                                          backgroundColor: Color(0xFFFE4A49),
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
+                                          label: "Delete",
+                                        ),
+                                        SlidableAction(
+                                          onPressed: (context) =>
+                                              Navigator.push(
+                                                  this.context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditMahasiswa(
+                                                              mahasiswaList[
+                                                                  index]))),
+                                          backgroundColor: Color(0xFF21B7CA),
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.edit,
+                                          label: "Edit",
+                                        ),
+                                      ],
+                                    ),
+                                    child: LazyLoadingList(
+                                      initialSizeOfItems: 10,
+                                      loadMore: () {},
+                                      child: MahasiswaCard(
+                                        mahasiswaList[index],
+                                      ),
+                                      index: index,
+                                      hasMore: true,
+                                    ),
+                                  );
+                                },
                               ),
-                              child: LazyLoadingList(
-                                initialSizeOfItems: 10,
-                                loadMore: () {},
-                                child: MahasiswaCard(mahasiswaList[index]),
-                                index: index,
-                                hasMore: true,
-                              ),
-                            );
-                          },
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
+      //Tombol Add Mahasiswa
       floatingActionButton: FloatingActionButton.extended(
         label: const Text(
           "ADD MAHASISWA",

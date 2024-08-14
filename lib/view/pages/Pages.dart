@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,30 +6,34 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:http/http.dart';
 import 'package:lazy_loading_list/lazy_loading_list.dart';
+import 'package:sistem_presensi_app/controller/Controllers.dart';
 import 'package:sistem_presensi_app/main.dart';
+import 'package:sistem_presensi_app/model/Absensi.dart';
 import 'package:sistem_presensi_app/model/Kelas.dart';
 import 'package:sistem_presensi_app/model/KelasMahasiswa.dart';
 import 'package:sistem_presensi_app/model/Mahasiswa.dart';
+import 'package:sistem_presensi_app/model/MahasiswaSudahAbsen.dart';
+import 'package:sistem_presensi_app/shared/Shared.dart';
 import 'package:sistem_presensi_app/view/widgets/Widgets.dart';
 import 'package:sistem_presensi_app/service/ApiServices.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
-import 'package:sensors_plus/sensors_plus.dart';
+
+import 'package:multi_dropdown/enum/app_enums.dart';
+import 'package:multi_dropdown/models/chip_config.dart';
+import 'package:multi_dropdown/models/value_item.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 part 'Profile/Login.dart';
 part 'Profile/Register.dart';
 part 'Absensi/AbsensiView.dart';
 part 'Absensi/AddAbsensi.dart';
 part 'Absensi/EditAbsensi.dart';
-part 'Absensi/ImagePreview.dart';
 part 'Kelas/AddKelas.dart';
 part 'Kelas/EditKelas.dart';
 part 'Kelas/KelasView.dart';
-part 'Kelas/PilihMahasiswa.dart';
 part 'Home.dart';
 part 'Mahasiswa/AddMahasiswaView.dart';
 part 'Mahasiswa/EditMahasiswa.dart';

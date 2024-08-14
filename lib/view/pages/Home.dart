@@ -8,6 +8,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  HomeController homeController = new HomeController();
+
   List<Kelas> Kelaslist = [];
   Future<dynamic> getKelas() async {
     await ApiServices.getKelas().then((value) {
@@ -70,24 +72,30 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.only(bottom: 32, top: 32, left: 16, right: 8),
       child: Row(
         children: [
-          Icon(
-            FeatherIcons.user,
-            size: 40,
-          ),
-          const SizedBox(width: 8),
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Good Morning Angelo",
+                "Selamat Pagi",
                 textAlign: TextAlign.left,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
               ),
-              const SizedBox(height: 6),
               Text(
-                "070601201026",
+                "Semoga Harimu Berjalan dengan Lancar!",
                 textAlign: TextAlign.left,
               ),
             ],
+          ),
+          const Spacer(), // Add Spacer to push remaining space
+          IconButton(
+            onPressed: () async {
+              String url = 'http://' + Const.baseUrl + '/api/Absensi/Export';
+              await homeController.DownloadExcelButton(url);
+            },
+            icon: Icon(
+              Icons.download,
+              size: 48,
+            ),
           ),
         ],
       ),
@@ -123,57 +131,56 @@ class _HomeState extends State<Home> {
             Flexible(
               child: RefreshIndicator(
                 onRefresh: getKelas,
-                child: ListView.builder(
-                  key: UniqueKey(),
-                  scrollDirection: Axis.vertical,
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  itemCount: Kelaslist.length,
-                  itemBuilder: (context, index) {
-                    return Slidable(
-                      // Specify a key if the Slidable is dismissible.
-                      key: ValueKey(Kelaslist[index]
-                          .Kelas_Id), // Use index for unique key per item
+                child: Kelaslist.isEmpty
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        key: UniqueKey(),
+                        scrollDirection: Axis.vertical,
+                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        itemCount: Kelaslist.length,
+                        itemBuilder: (context, index) {
+                          return Slidable(
+                            // Specify a key if the Slidable is dismissible.
+                            key: ValueKey(Kelaslist[index]
+                                .Kelas_Id), // Use index for unique key per item
 
-                      // The start action pane is the one at the left or the top side.
-                      startActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        // dismissible: DismissiblePane(onDismissed: () {
-                        //   DeleteKelas(Kelaslist[index].Kelas_Id);
-                        // }),
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) => DeleteKelas(Kelaslist[index]
-                                .Kelas_Id), // Pass context to onPressed
-                            backgroundColor: Color(0xFFFE4A49),
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete,
-                            label: 'Delete',
-                          ),
-                          SlidableAction(
-                            onPressed: (context) => Navigator.push(
-                                this.context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditKelas(Kelaslist[
-                                        index]))), // Pass context to onPressed
-                            backgroundColor: Color(0xFF21B7CA),
-                            foregroundColor: Colors.white,
-                            icon: Icons.edit,
-                            label: 'Edit',
-                          ),
-                        ],
-                      ),
+                            // The start action pane is the one at the left or the top side.
+                            startActionPane: ActionPane(
+                              motion: const ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (context) => DeleteKelas(Kelaslist[
+                                          index]
+                                      .Kelas_Id), // Pass context to onPressed
+                                  backgroundColor: Color(0xFFFE4A49),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Delete',
+                                ),
+                                SlidableAction(
+                                  onPressed: (context) => Navigator.push(
+                                      this.context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EditKelas(Kelaslist[
+                                              index]))), // Pass context to onPressed
+                                  backgroundColor: Color(0xFF21B7CA),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.edit,
+                                  label: 'Edit',
+                                ),
+                              ],
+                            ),
 
-                      // The child of the Slidable is the actual list item content
-                      child: LazyLoadingList(
-                        initialSizeOfItems: 10,
-                        loadMore: () {},
-                        child: ClassCard(Kelaslist[index]),
-                        index: index,
-                        hasMore: true,
+                            child: LazyLoadingList(
+                              initialSizeOfItems: 10,
+                              loadMore: () {},
+                              child: ClassCard(Kelaslist[index]),
+                              index: index,
+                              hasMore: true,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ),
           ],

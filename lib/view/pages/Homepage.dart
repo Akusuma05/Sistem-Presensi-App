@@ -8,17 +8,21 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 0; //Navbar yang dipilih
+
+  //View untuk ditambilkan navbar
   final screens = [
     Home(),
     MahasiswaView(),
-    Login(),
+    CameraViewMahasiswa(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: screens[_selectedIndex],
+
+        //BotNavBar
         bottomNavigationBar: NavigationBarTheme(
           data: NavigationBarThemeData(
             indicatorColor: Colors.blue.shade100,
@@ -29,7 +33,9 @@ class _HomepageState extends State<Homepage> {
             selectedIndex: _selectedIndex,
             onDestinationSelected: (int index) {
               setState(() {
-                _selectedIndex = index;
+                if (mounted) {
+                  _selectedIndex = index;
+                }
               });
             },
             destinations: const [
@@ -42,9 +48,9 @@ class _HomepageState extends State<Homepage> {
                   selectedIcon: Icon(Icons.people),
                   label: "Mahasiswa"),
               NavigationDestination(
-                  icon: Icon(Icons.person_outline),
-                  selectedIcon: Icon(Icons.person),
-                  label: "Profile"),
+                  icon: Icon(Icons.camera_alt_outlined),
+                  selectedIcon: Icon(Icons.camera_alt),
+                  label: "Kenali Mahasiswa"),
             ],
           ),
         ));

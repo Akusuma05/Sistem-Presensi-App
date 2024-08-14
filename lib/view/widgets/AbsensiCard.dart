@@ -20,43 +20,43 @@ class _AbsensiCardState extends State<AbsensiCard> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
         child: InkWell(
-            onTap: () {
-              Navigator.push(this.context,
-                  MaterialPageRoute(builder: (context) => EditAbsensi()));
-            },
+            // onTap: () {
+            //   Navigator.push(this.context,
+            //       MaterialPageRoute(builder: (context) => EditAbsensi()));
+            // },
             child: Container(
-              padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                      child: Container(
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          DateFormat('yMd').format(a.Absensi_Waktu),
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87),
-                        ),
-                        Text(
-                          DateFormat('jms').format(a.Absensi_Waktu),
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87),
-                        ),
-                      ],
+          padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                  child: Container(
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      DateFormat('yMd').format(a.Absensi_Waktu),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87),
                     ),
-                  ))
-                ],
-              ),
-            )),
+                    Text(
+                      DateFormat('jms').format(a.Absensi_Waktu),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87),
+                    ),
+                  ],
+                ),
+              ))
+            ],
+          ),
+        )),
       ),
     );
   }

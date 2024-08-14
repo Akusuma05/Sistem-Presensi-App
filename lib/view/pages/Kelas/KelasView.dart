@@ -11,23 +11,46 @@ class KelasView extends StatefulWidget {
 class _KelasViewState extends State<KelasView> {
   List<Mahasiswa> mahasiswaList = [];
   List<KelasMahasiswa> KelasMahasiswaList = [];
+  List<MahasiswaSudahAbsen> MahasiswaSudahAbsenList = [];
+  bool _isLoadingMahasiswa = false; // Flag for Mahasiswa list loading
+  bool _isLoadingKelasMahasiswa = false; // Flag for KelasMahasiswa list loading
+  bool _isLoadingMahasiswaSudahAbsen = false;
 
   Future<void> getMahasiswaByKelasId(int Kelas_Id) async {
+    setState(() {
+      _isLoadingMahasiswa = true; // Set loading flag to true
+    });
     await ApiServices.getMahasiswaByKelasId(Kelas_Id).then((value) {
       setState(() {
         mahasiswaList = value;
+        _isLoadingMahasiswa =
+            false; // Set loading flag to false after data is fetched
       });
     });
-    print(mahasiswaList.toString());
+  }
+
+  //Function Get Absensi Mahasiswa Yang Sudah Absen Dalam waktu satu jam
+  Future<void> getMahasiswaSudahAbsen(int Kelas_Id) async {
+    setState(() {
+      _isLoadingMahasiswaSudahAbsen = true;
+    });
+    await ApiServices.getMahasiswaSudahAbsen(Kelas_Id).then((value) {
+      MahasiswaSudahAbsenList = value;
+      _isLoadingMahasiswaSudahAbsen = false;
+    });
   }
 
   Future<void> getKelasMahasiswaByKelasId(int Kelas_Id) async {
+    setState(() {
+      _isLoadingKelasMahasiswa = true; // Set loading flag to true
+    });
     await ApiServices.getKelasMahasiswabyId(Kelas_Id).then((value) {
       setState(() {
         KelasMahasiswaList = value;
+        _isLoadingKelasMahasiswa =
+            false; // Set loading flag to false after data is fetched
       });
     });
-    print(KelasMahasiswaList.toString());
   }
 
   Future<dynamic> DeleteKelasMahasiswa(
@@ -52,9 +75,16 @@ class _KelasViewState extends State<KelasView> {
 
   @override
   void initState() {
+    getMahasiswaSudahAbsen(widget.kelas.Kelas_Id);
     getKelasMahasiswaByKelasId(widget.kelas.Kelas_Id);
     getMahasiswaByKelasId(widget.kelas.Kelas_Id);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -69,9 +99,17 @@ class _KelasViewState extends State<KelasView> {
               },
               icon: new Icon(Icons.arrow_back_ios_rounded));
         }),
-        title: Text(
-          widget.kelas.Kelas_Nama,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        title: Column(
+          children: [
+            Text(
+              widget.kelas.Kelas_Nama,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              widget.kelas.Kelas_Id_varchar,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         actions: <Widget>[
           Builder(builder: (BuildContext context) {
@@ -90,10 +128,10 @@ class _KelasViewState extends State<KelasView> {
         centerTitle: true,
       ),
 
-      //Bottom Sheet
+      //Body
       body: Column(
         children: [
-          //Bottom Sheet
+          // Content with loading indicators
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -111,57 +149,74 @@ class _KelasViewState extends State<KelasView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Flexible(
-                      child: RefreshIndicator(
-                        onRefresh: () =>
-                            getMahasiswaByKelasId(widget.kelas.Kelas_Id),
-                        child: ListView.builder(
-                          key: UniqueKey(),
-                          scrollDirection: Axis.vertical,
-                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                          itemCount: mahasiswaList.length,
-                          itemBuilder: (context, index) {
-                            return Slidable(
-                              key: ValueKey(mahasiswaList[index].Mahasiswa_Id),
-                              startActionPane: ActionPane(
-                                motion: const ScrollMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      print("Debug Index: " + index.toString());
-                                      print("Debug KM_Id: " +
-                                          KelasMahasiswaList[index]
-                                              .Kelas_Mahasiswa_Id
-                                              .toString());
-                                      print("Mahasiswa_Id" +
-                                          KelasMahasiswaList[index]
-                                              .Mahasiswa_Id
-                                              .toString());
-                                      DeleteKelasMahasiswa(
-                                          KelasMahasiswaList[index]
-                                              .Kelas_Mahasiswa_Id,
+                      child: _isLoadingMahasiswa &&
+                              _isLoadingMahasiswaSudahAbsen
+                          ? Center(child: CircularProgressIndicator())
+                          : RefreshIndicator(
+                              // Only show RefreshIndicator when data is loaded
+                              onRefresh: () async {
+                                await getMahasiswaSudahAbsen(
+                                    widget.kelas.Kelas_Id);
+                                await getMahasiswaByKelasId(
+                                    widget.kelas.Kelas_Id);
+                              },
+                              child: ListView.builder(
+                                key: UniqueKey(),
+                                scrollDirection: Axis.vertical,
+                                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                                itemCount: mahasiswaList.length,
+                                itemBuilder: (context, index) {
+                                  return Slidable(
+                                    key: ValueKey(
+                                        mahasiswaList[index].Mahasiswa_Id),
+                                    startActionPane: ActionPane(
+                                      motion: const ScrollMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            print("Debug Index: " +
+                                                index.toString());
+                                            print("Debug KM_Id: " +
+                                                KelasMahasiswaList[index]
+                                                    .Kelas_Mahasiswa_Id
+                                                    .toString());
+                                            print("Mahasiswa_Id" +
+                                                KelasMahasiswaList[index]
+                                                    .Mahasiswa_Id
+                                                    .toString());
+                                            DeleteKelasMahasiswa(
+                                                KelasMahasiswaList[index]
+                                                    .Kelas_Mahasiswa_Id,
+                                                widget.kelas.Kelas_Id,
+                                                KelasMahasiswaList[index]
+                                                    .Mahasiswa_Id);
+                                          },
+                                          backgroundColor: Color(0xFFFE4A49),
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
+                                          label: "Delete",
+                                        ),
+                                      ],
+                                    ),
+                                    child: LazyLoadingList(
+                                      initialSizeOfItems: 10,
+                                      loadMore: () {},
+                                      child: StudentCard(
+                                          mahasiswaList[index],
                                           widget.kelas.Kelas_Id,
-                                          KelasMahasiswaList[index]
-                                              .Mahasiswa_Id);
-                                    },
-                                    backgroundColor: Color(0xFFFE4A49),
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: "Delete",
-                                  ),
-                                ],
+                                          MahasiswaSudahAbsenList.any(
+                                              (MahasiswaSudahAbsen) =>
+                                                  MahasiswaSudahAbsen
+                                                      .mahasiswaId ==
+                                                  mahasiswaList[index]
+                                                      .Mahasiswa_Id)),
+                                      index: index,
+                                      hasMore: true,
+                                    ),
+                                  );
+                                },
                               ),
-                              child: LazyLoadingList(
-                                initialSizeOfItems: 10,
-                                loadMore: () {},
-                                child: StudentCard(mahasiswaList[index],
-                                    widget.kelas.Kelas_Id),
-                                index: index,
-                                hasMore: true,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                            ),
                     ),
                   ],
                 ),

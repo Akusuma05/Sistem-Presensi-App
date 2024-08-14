@@ -37,12 +37,23 @@ class _ClassCardState extends State<ClassCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          widget.kelas.Kelas_Nama,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.kelas.Kelas_Nama,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87),
+                            ),
+                            Text(widget.kelas.Kelas_Id_varchar,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87))
+                          ],
                         ),
                         Text(
                           widget.kelas.Kelas_Lokasi,

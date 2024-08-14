@@ -8,31 +8,19 @@ class AddMahasiswaView extends StatefulWidget {
 }
 
 class _AddMahasiswaViewState extends State<AddMahasiswaView> {
-  final ctrlName = TextEditingController();
-  XFile? picture; // Variable to store the captured image
-  late CameraController cameraController; // Camera controller instance
-  bool _showCameraPreview = false;
+  //Controller
+  final ctrlName = TextEditingController(); //Text Field Input Nama
+  late CameraController cameraController; //Camera Controller
+  MahasiswaController mahasiswaController =
+      MahasiswaController(); //MahasiswaController
+
+  //Variable
+  bool _showCameraPreview = false; //Boolean tombol camera
+  XFile? picture; //File ambil foto
 
   @override
   void initState() {
-    cameraController = CameraController(cameras[0], ResolutionPreset.max);
-    cameraController.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    }).catchError((Object e) {
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            print("access was denied");
-            break;
-          default:
-            print(e.description);
-            break;
-        }
-      }
-    });
+    initCamera();
     super.initState();
   }
 
@@ -46,20 +34,26 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
     return Stack(
       children: [
         Scaffold(
+          //App Bar
           appBar: AppBar(
+            //Tombol Back
             leading: Builder(builder: (BuildContext context) {
               return IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(Icons.arrow_back_ios_rounded));
             }),
+
+            //Judul App Bar
             title: Text(
               "Add Mahasiswa",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             centerTitle: true,
           ),
+
           body: Column(
             children: [
+              //Kotak Abu2
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -73,14 +67,15 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
                   width: double.infinity,
                   child: Container(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+
+                    //Form Nama dan Foto
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Form(
-                          // This Form widget should be closed here
                           child: Column(
                             children: [
-                              // Text Field Class Name
+                              //Input Nama
                               TextFormField(
                                 keyboardType: TextInputType.name,
                                 decoration: InputDecoration(
@@ -98,6 +93,7 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
                                 height: 16,
                               ),
 
+                              //Tombol Open Camera
                               ElevatedButton.icon(
                                 onPressed: () async {
                                   // Dismiss the keyboard
@@ -128,6 +124,7 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
                                 height: 16,
                               ),
 
+                              //Menunjukan Gambar Apabila foto sudah diambil
                               picture != null
                                   ? Container(
                                       height:
@@ -144,6 +141,7 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
                                 height: 32,
                               ),
 
+                              //Tombol Submit
                               ElevatedButton(
                                 onPressed: () {
                                   if (ctrlName.text.toString() == "") {
@@ -161,15 +159,19 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
                                     );
                                   } else {
                                     if (mounted) {
-                                      if (_handleImageCapture(
-                                              picture!, ctrlName.text) !=
+                                      //Function untuk menambah maahasiswa baru
+                                      if (mahasiswaController
+                                              .AddMahasiswaTombol(
+                                                  picture!,
+                                                  ctrlName.text,
+                                                  this.context) !=
                                           null) {
                                         Fluttertoast.showToast(
                                             msg:
                                                 "Mahasiswa Berhasil Ditambahkan",
                                             toastLength: Toast.LENGTH_LONG,
                                             gravity: ToastGravity.BOTTOM,
-                                            backgroundColor: Colors.red,
+                                            backgroundColor: Colors.green,
                                             textColor: Colors.white,
                                             fontSize: 14);
                                       } else {
@@ -184,19 +186,18 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
                                     }
                                   }
                                 },
+
+                                //Tombol Submit
                                 child: Text(
                                   'Submit',
-                                  style: TextStyle(
-                                      color: Colors
-                                          .white), // Change the color of the text to white
+                                  style: TextStyle(color: Colors.white),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors
-                                      .black, // Change the color of the button to black
+                                  backgroundColor: Colors.black,
                                 ),
                               ),
                             ],
-                          ), // This Form widget should be closed here
+                          ),
                         ),
                       ],
                     ),
@@ -206,6 +207,8 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
             ],
           ),
         ),
+
+        //Tampilan Camera Preview
         _showCameraPreview
             ? Container(
                 // Set a white background color
@@ -256,6 +259,7 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
     );
   }
 
+  //Function untuk mengambil foto
   Future<void> _takePicture() async {
     try {
       await cameraController.takePicture().then((image) {
@@ -267,25 +271,25 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
     }
   }
 
-  Future<void> _handleImageCapture(XFile picture, String Nama_Mahasiswa) async {
-    // Read the captured image file
-    final imageBytes = await File(picture.path);
-
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-
-    // Call postAbsensi to send the image and class ID
-    var response = await ApiServices.postMahasiswa(imageBytes, Nama_Mahasiswa);
-
-    // Hide loading indicator
-    Navigator.pop(context);
-
-    return response;
+  //Initialisasi Kamera
+  void initCamera() {
+    cameraController = CameraController(cameras[0], ResolutionPreset.max);
+    cameraController.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    }).catchError((Object e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            print("access was denied");
+            break;
+          default:
+            print(e.description);
+            break;
+        }
+      }
+    });
   }
 }

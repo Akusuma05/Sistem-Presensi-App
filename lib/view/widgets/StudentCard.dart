@@ -3,7 +3,8 @@ part of "Widgets.dart";
 class StudentCard extends StatefulWidget {
   final Mahasiswa mahasiswa;
   final int Kelas_id;
-  const StudentCard(this.mahasiswa, this.Kelas_id);
+  final bool isAbsen;
+  const StudentCard(this.mahasiswa, this.Kelas_id, this.isAbsen);
 
   @override
   _StudentCardState createState() => _StudentCardState();
@@ -14,7 +15,7 @@ class _StudentCardState extends State<StudentCard> {
   Widget build(BuildContext context) {
     return Container(
       child: Card(
-        color: Colors.white,
+        color: widget.isAbsen ? Colors.green[400] : Colors.red[400],
         margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
@@ -31,11 +32,18 @@ class _StudentCardState extends State<StudentCard> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(widget.mahasiswa.Mahasiswa_Nama,
+                Flexible(
+                  child: Text(
+                    widget.mahasiswa.Mahasiswa_Nama,
                     style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87))
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow
+                        .ellipsis, // Enable text wrapping with ellipsis (...)
+                  ),
+                ),
               ],
             ),
           ),

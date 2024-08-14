@@ -19,19 +19,28 @@ class _MahasiswaCardState extends State<MahasiswaCard> {
         elevation: 0,
         child: InkWell(
           onTap: () {
-            Navigator.push(this.context,
-                MaterialPageRoute(builder: (context) => MahasiswaDetails()));
+            Navigator.push(
+                this.context,
+                MaterialPageRoute(
+                    builder: (context) => MahasiswaDetails(widget.mahasiswa)));
           },
           child: Container(
             padding: EdgeInsets.fromLTRB(16, 8, 0, 8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(widget.mahasiswa.Mahasiswa_Nama,
+                Flexible(
+                  child: Text(
+                    widget.mahasiswa.Mahasiswa_Nama,
                     style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87))
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    overflow: TextOverflow
+                        .ellipsis, // Enable text wrapping with ellipsis (...)
+                  ),
+                ),
               ],
             ),
           ),

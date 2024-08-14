@@ -1,10 +1,9 @@
-// part of 'Services.dart';
 import 'package:sistem_presensi_app/model/Absensi.dart';
 import 'package:sistem_presensi_app/model/Kelas.dart';
 import 'package:sistem_presensi_app/model/KelasMahasiswa.dart';
 import 'package:sistem_presensi_app/model/Mahasiswa.dart';
+import 'package:sistem_presensi_app/model/MahasiswaSudahAbsen.dart';
 import 'package:sistem_presensi_app/shared/Shared.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:http/http.dart';
@@ -68,12 +67,13 @@ class ApiServices {
 
   //Create Kelas
   static Future<List<Kelas>> setKelas(
-      String Kelas_Nama, String Kelas_Lokasi) async {
+      String Kelas_Nama, String Kelas_Lokasi, String Kelas_Id_varchar) async {
     var url = Uri.http(Const.baseUrl, "/api/Kelas");
     var request = MultipartRequest('POST', url);
 
     request.fields['Kelas_Nama'] = Kelas_Nama.toString();
     request.fields['Kelas_Lokasi'] = Kelas_Lokasi.toString();
+    request.fields['Kelas_Id_varchar'] = Kelas_Id_varchar.toString();
 
     // Send the request and decode response
     var response = await request.send();
@@ -90,8 +90,8 @@ class ApiServices {
     }
   }
 
-  static Future<dynamic> updateKelas(
-      int Kelas_Id, String Kelas_Nama, String Kelas_Lokasi) async {
+  static Future<dynamic> updateKelas(int Kelas_Id, String Kelas_Nama,
+      String Kelas_Lokasi, String Kelas_Id_varchar) async {
     var url =
         Uri.http(Const.baseUrl, "/api/Kelas/$Kelas_Id"); // Add ID to the URL
 
@@ -99,6 +99,7 @@ class ApiServices {
     var data = json.encode({
       'Kelas_Nama': Kelas_Nama,
       'Kelas_Lokasi': Kelas_Lokasi,
+      'Kelas_Id_varchar': Kelas_Id_varchar
     });
 
     // Create a PUT request with raw body
@@ -191,6 +192,34 @@ class ApiServices {
     }
   }
 
+  //Update Mahasiswa
+  static Future<dynamic> updateMahasiswa(
+      File mahasiswaFoto, String mahasiswaNama, int mahasiswaId) async {
+    var url = Uri.http(Const.baseUrl, "/api/Mahasiswa/$mahasiswaId");
+
+    var request = MultipartRequest('POST', url);
+
+    request.headers['X-HTTP-Method-Override'] = 'PUT';
+
+    request.fields['Mahasiswa_Nama'] = mahasiswaNama.toString();
+
+    var multipartFile =
+        await MultipartFile.fromPath('Mahasiswa_Foto', mahasiswaFoto.path);
+    request.files.add(multipartFile);
+
+    var response = await request.send();
+    var finalResponse = await http.Response.fromStream(response);
+    if (finalResponse.statusCode == 200) {
+      print(finalResponse);
+      return finalResponse;
+    } else {
+      // Handle error based on status code
+      var errorBody = await finalResponse.body;
+      throw Exception(
+          "API call failed with status code: ${finalResponse.statusCode}, message: $errorBody");
+    }
+  }
+
   //Delete KelasaMahasiswa
   static Future<void> deleteMahasiswa(int Mahasiswa_Id) async {
     final response = await http.delete(
@@ -201,6 +230,29 @@ class ApiServices {
       print('Kelas Mahasiswa with ID $Mahasiswa_Id deleted successfully.');
     } else {
       throw Exception('Failed to delete Kelas Mahasiswa with ID $Mahasiswa_Id');
+    }
+  }
+
+  //Deteksi Mahasiswa
+  static Future<dynamic> deteksiMahasiswa(File Mahasiswa_Foto) async {
+    var url = Uri.http(Const.baseUrl, "/api/Absensi/Detect");
+    var request = MultipartRequest('POST', url);
+
+    // Add image as multipart file
+    var multipartFile =
+        await MultipartFile.fromPath('Mahasiswa_Foto', Mahasiswa_Foto.path);
+    request.files.add(multipartFile);
+
+    // Send the request and decode response
+    var response = await request.send();
+    var finalResponse = await http.Response.fromStream(response);
+    if (finalResponse.statusCode == 202) {
+      return finalResponse;
+    } else {
+      // Handle error based on status code
+      print('Error: ${finalResponse.statusCode}');
+      print('Response body: ${finalResponse.body}');
+      return finalResponse;
     }
   }
 
@@ -338,6 +390,23 @@ class ApiServices {
         // Handle other errors
         throw Exception('Failed to load Absensi data.');
       }
+    }
+  }
+
+  //get Mahasiswa Yang Sudah Absen
+  static Future<List<MahasiswaSudahAbsen>> getMahasiswaSudahAbsen(
+      int Kelas_Id) async {
+    final urlString = "api/get-Absensi-bykelas/" + Kelas_Id.toString();
+    final response = await http.get(Uri.http(Const.baseUrl, urlString));
+
+    if (response.statusCode == 200) {
+      final decodedData = jsonDecode(response.body) as List;
+      final mahasiswaList = decodedData.map((data) {
+        return MahasiswaSudahAbsen.fromJson(data as Map<String, dynamic>);
+      }).toList();
+      return mahasiswaList;
+    } else {
+      throw Exception('Failed to load Mahasiswa');
     }
   }
 }
