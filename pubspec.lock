@@ -212,10 +212,10 @@ packages:
     dependency: "direct main"
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.6"
+    version: "1.2.2"
   http_parser:
     dependency: transitive
     description:
@@ -316,10 +316,10 @@ packages:
     dependency: "direct main"
     description:
       name: multi_dropdown
-      sha256: f041373be1ff12a22b48a839911deafe2cab87617d5ed995479712dea322c169
+      sha256: b63ff339fcc875d667f8688c8ef62853545b580dd2b6fe78b73339783268afd8
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.4"
   multi_select_flutter:
     dependency: "direct main"
     description:

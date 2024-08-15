@@ -16,6 +16,31 @@ class _AddKelasState extends State<AddKelas> {
   List<ValueItem> SelectedMahasiswaList = [];
   List<Kelas> KelasBaru = [];
 
+  Widget FieldSelectMahasiswa() {
+    if (MahasiswaList.isEmpty) {
+      return const Center(
+          child:
+              CircularProgressIndicator()); // Show a loading indicator while data is fetched
+    } else {
+      return MultiSelectDropDown(
+        controller: ctrlMahasiswa,
+        searchEnabled: true,
+        onOptionSelected: (options) {
+          debugPrint(options.toString());
+        },
+        options: MahasiswaList.map((mahasiswa) => ValueItem(
+              label: mahasiswa.Mahasiswa_Nama,
+              value: mahasiswa.Mahasiswa_Id.toString(),
+            )).toList(),
+        selectionType: SelectionType.multi,
+        chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+        dropdownHeight: 200,
+        optionTextStyle: const TextStyle(fontSize: 16),
+        selectedOptionIcon: const Icon(Icons.check_circle),
+      );
+    }
+  }
+
   @override
   void dispose() {
     ctrlName.dispose();
@@ -137,30 +162,10 @@ class _AddKelasState extends State<AddKelas> {
                               height: 16,
                             ),
 
-                            //DropDown Multi Select Mahasiswa
-                            MultiSelectDropDown(
-                              showClearIcon: true,
-                              controller: ctrlMahasiswa,
-                              onOptionSelected: (options) {
-                                debugPrint(options.toString());
-                              },
-                              options:
-                                  MahasiswaList.map((mahasiswa) => ValueItem(
-                                        label: mahasiswa.Mahasiswa_Nama,
-                                        value:
-                                            mahasiswa.Mahasiswa_Id.toString(),
-                                      )).toList(),
-                              selectionType: SelectionType.multi,
-                              chipConfig:
-                                  const ChipConfig(wrapType: WrapType.wrap),
-                              dropdownHeight: 300,
-                              optionTextStyle: const TextStyle(fontSize: 16),
-                              selectedOptionIcon:
-                                  const Icon(Icons.check_circle),
-                            ),
+                            FieldSelectMahasiswa(),
 
                             SizedBox(
-                              height: 32,
+                              height: 275,
                             ),
 
                             //Tombol Add

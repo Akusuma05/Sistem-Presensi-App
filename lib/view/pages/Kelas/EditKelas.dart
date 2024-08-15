@@ -149,28 +149,35 @@ class _EditKelasState extends State<EditKelas> {
   }
 
   Widget buildMultiSelectField() {
-    return MultiSelectDropDown(
-      showClearIcon: true,
-      controller: MahasiswaController,
-      onOptionSelected: (options) {
-        debugPrint(options.toString());
-      },
-      options: MahasiswaList.map((mahasiswa) => ValueItem(
-            label: mahasiswa.Mahasiswa_Nama,
-            value: mahasiswa.Mahasiswa_Id.toString(),
-          )).toList(),
-      selectedOptions: selectedmahasiswaListBaru
-          .map((mahasiswa) => ValueItem(
-                label: mahasiswa.Mahasiswa_Nama,
-                value: mahasiswa.Mahasiswa_Id.toString(),
-              ))
-          .toList(),
-      selectionType: SelectionType.multi,
-      chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-      dropdownHeight: 300,
-      optionTextStyle: const TextStyle(fontSize: 16),
-      selectedOptionIcon: const Icon(Icons.check_circle),
-    );
+    if (MahasiswaList.isEmpty && selectedmahasiswaListBaru.isEmpty) {
+      return const Center(
+          child:
+              CircularProgressIndicator()); // Show a loading indicator while data is fetched
+    } else {
+      return MultiSelectDropDown(
+        controller: MahasiswaController,
+        searchEnabled: true,
+        onOptionSelected: (options) {
+          debugPrint(options.toString());
+        },
+        options: MahasiswaList.map((mahasiswa) => ValueItem(
+              label: mahasiswa.Mahasiswa_Nama,
+              value: mahasiswa.Mahasiswa_Id.toString(),
+            )).toList(),
+        selectedOptions: selectedmahasiswaListBaru
+            .map((mahasiswa) => ValueItem(
+                  label: mahasiswa.Mahasiswa_Nama,
+                  value: mahasiswa.Mahasiswa_Id.toString(),
+                ))
+            .toList(),
+        selectionType: SelectionType.multi,
+        chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+        dropdownHeight: 200,
+        dropdownMargin: 2,
+        optionTextStyle: const TextStyle(fontSize: 16),
+        selectedOptionIcon: const Icon(Icons.check_circle),
+      );
+    }
   }
 
   @override
@@ -295,7 +302,7 @@ class _EditKelasState extends State<EditKelas> {
                             buildMultiSelectField(),
 
                             SizedBox(
-                              height: 32,
+                              height: 275,
                             ),
 
                             ElevatedButton(
