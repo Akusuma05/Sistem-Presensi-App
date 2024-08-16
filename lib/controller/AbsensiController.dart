@@ -25,36 +25,68 @@ class AbsensiController {
 
     // Handle API response
     if (response.statusCode == 201) {
-      Fluttertoast.showToast(
-          msg: "Absensi Berhasil Dicatat",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 14);
-      print(response); // Or show a success dialog
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Homepage()));
+      var detectedFaces =
+          (jsonDecode(response.body)["Detected Faces"] as List).join(", ");
+      var JumlahDetected =
+          (jsonDecode(response.body)["Detected Faces"] as List).length;
+      String MessageDetectedFace =
+          "$JumlahDetected Detected Faces: $detectedFaces";
+
+      var BerhasilTercatat =
+          (jsonDecode(response.body)["Present Mahasiswa"] as List).join(", ");
+      var JumlahBerhasil =
+          (jsonDecode(response.body)["Present Mahasiswa"] as List).length;
+      String MessagePresentMahasiswa =
+          "$JumlahBerhasil Faces Recorded: $BerhasilTercatat";
+
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Absensi Berhasil Dicatat'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(MessageDetectedFace),
+              Text(MessagePresentMahasiswa)
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Homepage())),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } else if (response.statusCode == 422) {
-      Fluttertoast.showToast(
-          msg: "No Face is detected",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 14);
-      // Hide loading indicator
-      Navigator.pop(context);
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('No Face is detected'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Homepage())),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } else {
-      Fluttertoast.showToast(
-          msg: "Error Input Absensi",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 14);
-      // Hide loading indicator
-      Navigator.pop(context);
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Error Input Absensi'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => Homepage())),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 }

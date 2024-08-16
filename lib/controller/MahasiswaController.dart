@@ -53,38 +53,51 @@ class MahasiswaController {
     if (response.statusCode == 202) {
       var detectedFaces =
           (jsonDecode(response.body)["Detected Faces"] as List).join(", ");
-      Fluttertoast.showToast(
-          msg: "Detected Faces: $detectedFaces",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 14);
+
+      String formattedMessage = "Detected Faces: $detectedFaces";
+
       print(response); // Or show a success dialog
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Homepage()));
+
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Face Detected'),
+          content: Text(formattedMessage),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } else if (response.statusCode == 422) {
-      Fluttertoast.showToast(
-          msg: "No Face is detected",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 14);
-      // Hide loading indicator
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Homepage()));
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('No Face Detected'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } else {
-      Fluttertoast.showToast(
-          msg: "Error Input Absensi",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 14);
-      // Hide loading indicator
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Homepage()));
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Error Input Absensi Or Server Internal Error'),
+          content: Text(response),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'OK'),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 

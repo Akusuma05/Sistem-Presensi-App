@@ -148,6 +148,28 @@ class _EditKelasState extends State<EditKelas> {
     return response;
   }
 
+  List<ValueItem> getCombinedOptions() {
+    // Use a Set to store unique ValueItems based on their value (Mahasiswa_Id)
+    Set<ValueItem> uniqueOptions = {};
+
+    // Add ValueItems from MahasiswaList to the set
+    uniqueOptions.addAll(MahasiswaList.map((mahasiswa) => ValueItem(
+          label: mahasiswa.Mahasiswa_Nama,
+          value: mahasiswa.Mahasiswa_Id.toString(),
+        )).toList());
+
+    // Add ValueItems from selectedmahasiswaListBaru to the set (duplicates will be ignored)
+    uniqueOptions.addAll(selectedmahasiswaListBaru
+        .map((mahasiswa) => ValueItem(
+              label: mahasiswa.Mahasiswa_Nama,
+              value: mahasiswa.Mahasiswa_Id.toString(),
+            ))
+        .toList());
+
+    // Convert the set back to a list
+    return uniqueOptions.toList();
+  }
+
   Widget buildMultiSelectField() {
     if (MahasiswaList.isEmpty && selectedmahasiswaListBaru.isEmpty) {
       return const Center(
@@ -160,10 +182,7 @@ class _EditKelasState extends State<EditKelas> {
         onOptionSelected: (options) {
           debugPrint(options.toString());
         },
-        options: MahasiswaList.map((mahasiswa) => ValueItem(
-              label: mahasiswa.Mahasiswa_Nama,
-              value: mahasiswa.Mahasiswa_Id.toString(),
-            )).toList(),
+        options: getCombinedOptions(),
         selectedOptions: selectedmahasiswaListBaru
             .map((mahasiswa) => ValueItem(
                   label: mahasiswa.Mahasiswa_Nama,
@@ -171,7 +190,7 @@ class _EditKelasState extends State<EditKelas> {
                 ))
             .toList(),
         selectionType: SelectionType.multi,
-        chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+        // chipConfig: const ChipConfig(wrapType: WrapType.wrap),
         dropdownHeight: 200,
         dropdownMargin: 2,
         optionTextStyle: const TextStyle(fontSize: 16),
@@ -185,6 +204,8 @@ class _EditKelasState extends State<EditKelas> {
     ctrlName.dispose();
     ctrlLocation.dispose();
     ctrlKelasIdvarchar.dispose();
+    MahasiswaList = [];
+    selectedmahasiswaListBaru = [];
     super.dispose();
   }
 
@@ -259,6 +280,12 @@ class _EditKelasState extends State<EditKelas> {
                               height: 16,
                             ),
 
+                            buildMultiSelectField(),
+
+                            SizedBox(
+                              height: 8,
+                            ),
+
                             //Text Field Class Name
                             TextFormField(
                               keyboardType: TextInputType.name,
@@ -297,12 +324,6 @@ class _EditKelasState extends State<EditKelas> {
 
                             SizedBox(
                               height: 16,
-                            ),
-
-                            buildMultiSelectField(),
-
-                            SizedBox(
-                              height: 275,
                             ),
 
                             ElevatedButton(

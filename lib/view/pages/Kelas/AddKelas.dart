@@ -122,6 +122,12 @@ class _AddKelasState extends State<AddKelas> {
                               height: 16,
                             ),
 
+                            FieldSelectMahasiswa(),
+
+                            SizedBox(
+                              height: 8,
+                            ),
+
                             //Text Field Class Name
                             TextFormField(
                               keyboardType: TextInputType.name,
@@ -160,12 +166,6 @@ class _AddKelasState extends State<AddKelas> {
 
                             SizedBox(
                               height: 16,
-                            ),
-
-                            FieldSelectMahasiswa(),
-
-                            SizedBox(
-                              height: 275,
                             ),
 
                             //Tombol Add
