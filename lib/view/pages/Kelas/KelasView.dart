@@ -12,6 +12,10 @@ class _KelasViewState extends State<KelasView> {
   List<Mahasiswa> mahasiswaList = [];
   List<KelasMahasiswa> KelasMahasiswaList = [];
   List<MahasiswaSudahAbsen> MahasiswaSudahAbsenList = [];
+  List<Mahasiswa> SearchMahasiswaList = [];
+
+  TextEditingController searchController = TextEditingController();
+
   bool _isLoadingMahasiswa = false; // Flag for Mahasiswa list loading
   bool _isLoadingKelasMahasiswa = false; // Flag for KelasMahasiswa list loading
   bool _isLoadingMahasiswaSudahAbsen = false;
@@ -23,6 +27,7 @@ class _KelasViewState extends State<KelasView> {
     await ApiServices.getMahasiswaByKelasId(Kelas_Id).then((value) {
       setState(() {
         mahasiswaList = value;
+        SearchMahasiswaList = value;
         _isLoadingMahasiswa =
             false; // Set loading flag to false after data is fetched
       });
@@ -73,6 +78,15 @@ class _KelasViewState extends State<KelasView> {
     return response;
   }
 
+  void filterSearchResults(String query) {
+    setState(() {
+      SearchMahasiswaList = mahasiswaList
+          .where((Mahasiswa) => Mahasiswa.Mahasiswa_Nama.toLowerCase()
+              .contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   void initState() {
     getMahasiswaSudahAbsen(widget.kelas.Kelas_Id);
@@ -83,7 +97,6 @@ class _KelasViewState extends State<KelasView> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -148,6 +161,27 @@ class _KelasViewState extends State<KelasView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    //Search Bar
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
+                      child: SizedBox(
+                        height: 40,
+                        child: TextField(
+                          controller: searchController,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(8),
+                              hintText: "Search",
+                              prefixIcon: Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(24.0)))),
+                          onChanged: (value) {
+                            filterSearchResults(value);
+                          },
+                        ),
+                      ),
+                    ),
                     Flexible(
                       child: _isLoadingMahasiswa &&
                               _isLoadingMahasiswaSudahAbsen
@@ -164,11 +198,11 @@ class _KelasViewState extends State<KelasView> {
                                 key: UniqueKey(),
                                 scrollDirection: Axis.vertical,
                                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                                itemCount: mahasiswaList.length,
+                                itemCount: SearchMahasiswaList.length,
                                 itemBuilder: (context, index) {
                                   return Slidable(
-                                    key: ValueKey(
-                                        mahasiswaList[index].Mahasiswa_Id),
+                                    key: ValueKey(SearchMahasiswaList[index]
+                                        .Mahasiswa_Id),
                                     startActionPane: ActionPane(
                                       motion: const ScrollMotion(),
                                       children: [
@@ -202,7 +236,7 @@ class _KelasViewState extends State<KelasView> {
                                       initialSizeOfItems: 10,
                                       loadMore: () {},
                                       child: StudentCard(
-                                          mahasiswaList[index],
+                                          SearchMahasiswaList[index],
                                           widget.kelas.Kelas_Id,
                                           MahasiswaSudahAbsenList.any(
                                               (MahasiswaSudahAbsen) =>

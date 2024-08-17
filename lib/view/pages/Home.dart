@@ -9,12 +9,16 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   HomeController homeController = new HomeController();
+  TextEditingController searchController = TextEditingController();
 
   List<Kelas> Kelaslist = [];
+  List<Kelas> SearchKelasList = [];
+
   Future<dynamic> getKelas() async {
     await ApiServices.getKelas().then((value) {
       setState(() {
         Kelaslist = value;
+        SearchKelasList = value;
       });
     });
     print(Kelaslist.toString());
@@ -25,6 +29,14 @@ class _HomeState extends State<Home> {
     await ApiServices.deleteKelas(Kelas_Id);
     await getKelas();
     return response;
+  }
+
+  void filterSearchResults(String query) {
+    setState(() {
+      SearchKelasList = Kelaslist.where((Kelas) =>
+              Kelas.Kelas_Nama.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
@@ -128,20 +140,43 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+
+            //Search Bar
+            Padding(
+              padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+              child: SizedBox(
+                height: 40,
+                child: TextField(
+                  controller: searchController,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(8),
+                      hintText: "Search",
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(20.0)))),
+                  onChanged: (value) {
+                    filterSearchResults(value);
+                  },
+                ),
+              ),
+            ),
+
             Flexible(
               child: RefreshIndicator(
                 onRefresh: getKelas,
-                child: Kelaslist.isEmpty
+                child: SearchKelasList.isEmpty && Kelaslist.isEmpty
                     ? Center(child: CircularProgressIndicator())
                     : ListView.builder(
                         key: UniqueKey(),
                         scrollDirection: Axis.vertical,
                         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        itemCount: Kelaslist.length,
+                        itemCount: SearchKelasList.length,
                         itemBuilder: (context, index) {
                           return Slidable(
                             // Specify a key if the Slidable is dismissible.
-                            key: ValueKey(Kelaslist[index]
+                            key: ValueKey(SearchKelasList[index]
                                 .Kelas_Id), // Use index for unique key per item
 
                             // The start action pane is the one at the left or the top side.
@@ -149,9 +184,9 @@ class _HomeState extends State<Home> {
                               motion: const ScrollMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (context) => DeleteKelas(Kelaslist[
-                                          index]
-                                      .Kelas_Id), // Pass context to onPressed
+                                  onPressed: (context) => DeleteKelas(
+                                      SearchKelasList[index]
+                                          .Kelas_Id), // Pass context to onPressed
                                   backgroundColor: Color(0xFFFE4A49),
                                   foregroundColor: Colors.white,
                                   icon: Icons.delete,
@@ -161,8 +196,9 @@ class _HomeState extends State<Home> {
                                   onPressed: (context) => Navigator.push(
                                       this.context,
                                       MaterialPageRoute(
-                                          builder: (context) => EditKelas(Kelaslist[
-                                              index]))), // Pass context to onPressed
+                                          builder: (context) => EditKelas(
+                                              SearchKelasList[
+                                                  index]))), // Pass context to onPressed
                                   backgroundColor: Color(0xFF21B7CA),
                                   foregroundColor: Colors.white,
                                   icon: Icons.edit,
@@ -174,7 +210,7 @@ class _HomeState extends State<Home> {
                             child: LazyLoadingList(
                               initialSizeOfItems: 10,
                               loadMore: () {},
-                              child: ClassCard(Kelaslist[index]),
+                              child: ClassCard(SearchKelasList[index]),
                               index: index,
                               hasMore: true,
                             ),
