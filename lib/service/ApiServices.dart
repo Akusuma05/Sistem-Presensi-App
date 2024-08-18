@@ -122,15 +122,22 @@ class ApiServices {
   }
 
   //Delete Kelas
-  static Future<void> deleteKelas(int kelasId) async {
+  static Future<dynamic> deleteKelas(int kelasId) async {
     final response = await http.delete(
       Uri.http(Const.baseUrl, "/api/Kelas/$kelasId"),
     );
 
     if (response.statusCode == 202) {
-      print('Kelas with ID $kelasId deleted successfully.');
+      print(
+          'DEBUG APIService deleteKelas: "Kelas with ID $kelasId deleted successfully."');
+      return response;
     } else {
-      throw Exception('Failed to delete Kelas with ID $kelasId');
+      print(
+          'DEBUG APIService deleteKelas: Failed to delete Kelas with ID $kelasId response Code:' +
+              response.statusCode.toString() +
+              '\n response body:' +
+              response.body);
+      return response;
     }
   }
 
@@ -194,7 +201,7 @@ class ApiServices {
 
   //Update Mahasiswa
   static Future<dynamic> updateMahasiswa(
-      File mahasiswaFoto, String mahasiswaNama, int mahasiswaId) async {
+      File? mahasiswaFoto, String mahasiswaNama, int mahasiswaId) async {
     var url = Uri.http(Const.baseUrl, "/api/Mahasiswa/$mahasiswaId");
 
     var request = MultipartRequest('POST', url);
@@ -203,33 +210,45 @@ class ApiServices {
 
     request.fields['Mahasiswa_Nama'] = mahasiswaNama.toString();
 
-    var multipartFile =
-        await MultipartFile.fromPath('Mahasiswa_Foto', mahasiswaFoto.path);
-    request.files.add(multipartFile);
+    if (mahasiswaFoto != null) {
+      var multipartFile =
+          await MultipartFile.fromPath('Mahasiswa_Foto', mahasiswaFoto.path);
+      request.files.add(multipartFile);
+    }
 
     var response = await request.send();
     var finalResponse = await http.Response.fromStream(response);
     if (finalResponse.statusCode == 200) {
-      print(finalResponse);
+      print(
+          'DEBUG APIService updateMahasiswa: "Mahasiswa with Id $mahasiswaId updated successfully."');
       return finalResponse;
     } else {
-      // Handle error based on status code
-      var errorBody = await finalResponse.body;
-      throw Exception(
-          "API call failed with status code: ${finalResponse.statusCode}, message: $errorBody");
+      print(
+          'DEBUG APIService deleteMahasiswa: Failed to delete Mahasiswa with ID $mahasiswaId response Code:' +
+              finalResponse.statusCode.toString() +
+              '\n response body:' +
+              finalResponse.body);
+      return null;
     }
   }
 
   //Delete KelasaMahasiswa
-  static Future<void> deleteMahasiswa(int Mahasiswa_Id) async {
+  static Future<dynamic> deleteMahasiswa(int mahasiswaId) async {
     final response = await http.delete(
-      Uri.http(Const.baseUrl, "/api/Mahasiswa/$Mahasiswa_Id"),
+      Uri.http(Const.baseUrl, "/api/Mahasiswa/$mahasiswaId"),
     );
 
     if (response.statusCode == 202) {
-      print('Kelas Mahasiswa with ID $Mahasiswa_Id deleted successfully.');
+      print(
+          'DEBUG APIService deleteMahasiswa: "Mahasiswa with Id $mahasiswaId deleted successfully."');
+      return response;
     } else {
-      throw Exception('Failed to delete Kelas Mahasiswa with ID $Mahasiswa_Id');
+      print(
+          'DEBUG APIService deleteMahasiswa: Failed to delete Mahasiswa with ID $mahasiswaId response Code:' +
+              response.statusCode.toString() +
+              '\n response body:' +
+              response.body);
+      return response;
     }
   }
 

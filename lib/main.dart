@@ -39,10 +39,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: Homepage(),
-      routes: {
-        Login.routeName: (context) => const Login(),
-        Register.routeName: (context) => const Register(),
-      },
     );
   }
 }

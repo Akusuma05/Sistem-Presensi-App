@@ -8,35 +8,28 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  HomeController homeController = new HomeController();
+  HomeController homeController = HomeController();
   TextEditingController searchController = TextEditingController();
 
-  List<Kelas> Kelaslist = [];
-  List<Kelas> SearchKelasList = [];
+  List<Kelas> kelasList = [];
+  List<Kelas> searchKelasList = [];
 
-  Future<dynamic> getKelas() async {
-    await ApiServices.getKelas().then((value) {
-      setState(() {
-        Kelaslist = value;
-        SearchKelasList = value;
-      });
-    });
-    print(Kelaslist.toString());
-  }
-
-  Future<dynamic> DeleteKelas(int Kelas_Id) async {
-    dynamic response = true;
-    await ApiServices.deleteKelas(Kelas_Id);
-    await getKelas();
-    return response;
-  }
-
-  void filterSearchResults(String query) {
-    setState(() {
-      SearchKelasList = Kelaslist.where((Kelas) =>
-              Kelas.Kelas_Nama.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  _buildBottomSheet(),
+                ],
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: _buildAddClassButton());
   }
 
   @override
@@ -50,36 +43,8 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Column(
-              children: [
-                _buildUserInfo(),
-                _bottomSheet(),
-              ],
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text(
-          "ADD CLASS",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.black,
-        onPressed: () {
-          Navigator.push(this.context,
-              MaterialPageRoute(builder: (context) => AddKelas()));
-        }, // Implement functionality
-      ),
-    );
-  }
-
-  Container _buildUserInfo() {
+  //Build UI Header
+  Container _buildHeader() {
     return Container(
       padding: const EdgeInsets.only(bottom: 32, top: 32, left: 16, right: 8),
       child: Row(
@@ -87,22 +52,25 @@ class _HomeState extends State<Home> {
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              //Text Selamat Pagi
               Text(
                 "Selamat Pagi",
                 textAlign: TextAlign.left,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
               ),
+              //Text Semoga Harimu Berjalan Lancar
               Text(
                 "Semoga Harimu Berjalan dengan Lancar!",
                 textAlign: TextAlign.left,
               ),
             ],
           ),
-          const Spacer(), // Add Spacer to push remaining space
+          const Spacer(),
+          //Tombol Download
           IconButton(
             onPressed: () async {
               String url = 'http://' + Const.baseUrl + '/api/Absensi/Export';
-              await homeController.DownloadExcelButton(url);
+              await homeController.downloadExcelButton(url);
             },
             icon: Icon(
               Icons.download,
@@ -114,9 +82,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Expanded _bottomSheet() {
+  //Build UI Bottom Sheet
+  Expanded _buildBottomSheet() {
     return Expanded(
       child: Container(
+        //Box Rounded Corner
         decoration: BoxDecoration(
           color: Colors.grey[300],
           border: Border.all(color: Colors.transparent),
@@ -126,11 +96,14 @@ class _HomeState extends State<Home> {
           ),
         ),
         width: double.infinity,
+
+        //Isi dari Bottom Sheet
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(22, 16, 8, 0),
+              //Tulisan Classes
               child: Text(
                 "Classes",
                 textAlign: TextAlign.left,
@@ -142,86 +115,140 @@ class _HomeState extends State<Home> {
             ),
 
             //Search Bar
-            Padding(
-              padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
-              child: SizedBox(
-                height: 40,
-                child: TextField(
-                  controller: searchController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(8),
-                      hintText: "Search",
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20.0)))),
-                  onChanged: (value) {
-                    filterSearchResults(value);
-                  },
-                ),
-              ),
-            ),
-
-            Flexible(
-              child: RefreshIndicator(
-                onRefresh: getKelas,
-                child: SearchKelasList.isEmpty && Kelaslist.isEmpty
-                    ? Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        key: UniqueKey(),
-                        scrollDirection: Axis.vertical,
-                        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        itemCount: SearchKelasList.length,
-                        itemBuilder: (context, index) {
-                          return Slidable(
-                            // Specify a key if the Slidable is dismissible.
-                            key: ValueKey(SearchKelasList[index]
-                                .Kelas_Id), // Use index for unique key per item
-
-                            // The start action pane is the one at the left or the top side.
-                            startActionPane: ActionPane(
-                              motion: const ScrollMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (context) => DeleteKelas(
-                                      SearchKelasList[index]
-                                          .Kelas_Id), // Pass context to onPressed
-                                  backgroundColor: Color(0xFFFE4A49),
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.delete,
-                                  label: 'Delete',
-                                ),
-                                SlidableAction(
-                                  onPressed: (context) => Navigator.push(
-                                      this.context,
-                                      MaterialPageRoute(
-                                          builder: (context) => EditKelas(
-                                              SearchKelasList[
-                                                  index]))), // Pass context to onPressed
-                                  backgroundColor: Color(0xFF21B7CA),
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.edit,
-                                  label: 'Edit',
-                                ),
-                              ],
-                            ),
-
-                            child: LazyLoadingList(
-                              initialSizeOfItems: 10,
-                              loadMore: () {},
-                              child: ClassCard(SearchKelasList[index]),
-                              index: index,
-                              hasMore: true,
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ),
+            _buildSearchBar(),
+            //Kelas Card View
+            _buildListViewKelasCardView(),
           ],
         ),
       ),
     );
+  }
+
+  //Build UI Add Kelas Button
+  FloatingActionButton _buildAddClassButton() {
+    return FloatingActionButton.extended(
+      label: const Text(
+        "ADD KELAS",
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.black,
+      onPressed: () {
+        Navigator.push(
+            this.context, MaterialPageRoute(builder: (context) => AddKelas()));
+      },
+    );
+  }
+
+  //Build UI Search Bar
+  Padding _buildSearchBar() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: SizedBox(
+        height: 40,
+        child: TextField(
+          controller: searchController,
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(8),
+              hintText: "Search",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)))),
+          onChanged: (value) {
+            _filterSearchResults(value);
+          },
+        ),
+      ),
+    );
+  }
+
+  //Build UI Kelas Card View
+  Flexible _buildListViewKelasCardView() {
+    return Flexible(
+      child: RefreshIndicator(
+        onRefresh: getKelas,
+        child: searchKelasList.isEmpty && kelasList.isEmpty
+            ? Center(child: CircularProgressIndicator())
+            : ListView.builder(
+                key: UniqueKey(),
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                itemCount: searchKelasList.length,
+                itemBuilder: (context, index) {
+                  //Slidable Tombol Edit dan Delete
+                  return Slidable(
+                    key: ValueKey(searchKelasList[index].Kelas_Id),
+                    startActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        //Tombol Delete
+                        SlidableAction(
+                          onPressed: (context) =>
+                              DeleteKelas(searchKelasList[index].Kelas_Id),
+                          backgroundColor: Color(0xFFFE4A49),
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                        //Tombol Edit
+                        SlidableAction(
+                          onPressed: (context) => Navigator.push(
+                              this.context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditKelas(
+                                      searchKelasList[
+                                          index]))), // Pass context to onPressed
+                          backgroundColor: Color(0xFF21B7CA),
+                          foregroundColor: Colors.white,
+                          icon: Icons.edit,
+                          label: 'Edit',
+                        ),
+                      ],
+                    ),
+                    //Card View Kelas
+                    child: LazyLoadingList(
+                      initialSizeOfItems: 10,
+                      loadMore: () {},
+                      child: ClassCard(searchKelasList[index]),
+                      index: index,
+                      hasMore: true,
+                    ),
+                  );
+                },
+              ),
+      ),
+    );
+  }
+
+  //Get Kelas
+  //Function untuk memanggil hasil response dari HomeController dari mengisi variable KelasList dan SearchKelasList
+  Future<dynamic> getKelas() async {
+    final response = await homeController.getKelas();
+    setState(() {
+      kelasList = response;
+      searchKelasList = response;
+    });
+    print("DEBUG HomeView getKelas: kelasList length " +
+        response.length.toString());
+  }
+
+  //Delete Kelas
+  //Function untuk memanggil hasil response dari HomeController untuk menghapus Kelas berdasarkan KelasId yang diinput
+  Future<dynamic> DeleteKelas(int Kelas_Id) async {
+    dynamic response = await homeController.deleteKelas(Kelas_Id);
+    await getKelas();
+    print("DEBUG HomeView deleteKelas: " + response.statusCode.toString());
+    return response;
+  }
+
+  //Filter Search Result
+  //Function mengisi SearchKelasList berdasarkan hasil filter KelasList
+  void _filterSearchResults(String query) {
+    setState(() {
+      searchKelasList = kelasList
+          .where((Kelas) =>
+              Kelas.Kelas_Nama.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 }

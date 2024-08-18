@@ -40,11 +40,17 @@ class _CameraViewMahasiswaState extends State<CameraViewMahasiswa> {
               backgroundColor: Colors.white,
               child: const Icon(Icons.camera_alt),
               onPressed: () async {
+                // Show loading indicator
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return Center(child: CircularProgressIndicator());
+                  },
+                );
                 XFile? image = await cameraController.takePicture();
-                if (image != null) {
-                  await mahasiswaController.DeteksiMahasiswaTombol(
-                      image, this.context);
-                }
+                await mahasiswaController.DeteksiMahasiswaTombol(
+                    image, this.context);
               },
             ),
           ),

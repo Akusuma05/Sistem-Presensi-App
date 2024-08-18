@@ -1,6 +1,44 @@
 part of 'Controllers.dart';
 
 class MahasiswaController {
+  //Function Get Mahasiswa
+  //Function memanggil function getMahasiswa dari APIService dan return hasil response API
+  Future<List<Mahasiswa>> getMahasiswa() async {
+    final response = await ApiServices.getMahasiswa();
+    print("DEBUG MahasiswaController getMahasiswa: mahasiswaList length " +
+        response.length.toString());
+    return response;
+  }
+
+  //Function Delete Mahasiswa
+  //Function memanggil function deleteMahasiswa berdasarkan mahasiswaId dari APIService dan return hasil response API
+  Future<dynamic> deleteMahasiswa(int mahasiswaId) async {
+    final response = await ApiServices.deleteMahasiswa(mahasiswaId);
+    print("DEBUG MahasiswaController deleteMahasiswa: " +
+        response.statusCode.toString());
+    return response;
+  }
+
+  //Function Update Mahasiswa
+  //Function memanggil function updateMahasiswa untuk update mahasiswaFoto, mahasiswaNama, mahasiswaId berdasarkan mahasiswaId dari APIService dan return hasil response API
+  Future<dynamic> updateMahasiswa(
+      XFile? mahasiswaFoto, String mahasiswaNama, int mahasiswaId) async {
+    if (mahasiswaFoto == null) {
+      final response =
+          await ApiServices.updateMahasiswa(null, mahasiswaNama, mahasiswaId);
+      print("DEBUG MahasiswaController updateMahasiswa: " +
+          response.statusCode.toString());
+      return response;
+    } else {
+      final fileFoto = await File(mahasiswaFoto.path);
+      final response = await ApiServices.updateMahasiswa(
+          fileFoto, mahasiswaNama, mahasiswaId);
+      print("DEBUG MahasiswaController updateMahasiswa: " +
+          response.statusCode.toString());
+      return response;
+    }
+  }
+
   //Function Menambah Mahasiswa
   Future<void> AddMahasiswaTombol(
       XFile picture, String Nama_Mahasiswa, BuildContext context) async {
@@ -33,15 +71,6 @@ class MahasiswaController {
       XFile picture, BuildContext context) async {
     // Read the captured image file
     final imageBytes = await File(picture.path);
-
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
 
     // Call postAbsensi to send the image and class ID
     var response = await ApiServices.deteksiMahasiswa(imageBytes);
@@ -99,34 +128,5 @@ class MahasiswaController {
         ),
       );
     }
-  }
-
-  //Fungsi Edit Mahasiswa
-  Future<void> EditMahasiswaTombol(XFile picture, String Nama_Mahasiswa,
-      int Mahasiswa_Id, BuildContext context) async {
-    print("Debug Nama Update Mahasiswa: " + Nama_Mahasiswa);
-    // Read the captured image file
-    final imageBytes = await File(picture.path);
-
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-
-    // Call postAbsensi to send the image and class ID
-    var response = await ApiServices.updateMahasiswa(
-        imageBytes, Nama_Mahasiswa, Mahasiswa_Id);
-
-    // Hide loading indicator
-    Navigator.pop(context);
-
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context) => Homepage(key: UniqueKey())));
-
-    return response;
   }
 }
