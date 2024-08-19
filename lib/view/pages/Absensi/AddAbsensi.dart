@@ -32,7 +32,15 @@ class _AddAbsensiState extends State<AddAbsensi> with WidgetsBindingObserver {
     }
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: CameraPreview(cameraController), //Camera Preview
+      body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: Container(
+                width: 100, // the actual width is not important here
+                child: CameraPreview(cameraController!)),
+          )), //Camera Preview
       //Tombol Camera
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Stack(

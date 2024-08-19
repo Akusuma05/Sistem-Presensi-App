@@ -217,7 +217,15 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
       child: Stack(
         children: [
           // Existing CameraPreview widget
-          CameraPreview(cameraController),
+          Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: Container(
+                    width: 100, // the actual width is not important here
+                    child: CameraPreview(cameraController!)),
+              )),
 
           // Existing Close Button
           Positioned(

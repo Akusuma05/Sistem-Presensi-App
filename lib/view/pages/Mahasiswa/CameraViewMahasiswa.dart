@@ -30,7 +30,15 @@ class _CameraViewMahasiswaState extends State<CameraViewMahasiswa> {
     }
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: CameraPreview(cameraController),
+      body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: Container(
+                width: 100, // the actual width is not important here
+                child: CameraPreview(cameraController!)),
+          )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Stack(
         children: [
