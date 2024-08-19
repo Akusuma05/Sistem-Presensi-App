@@ -45,7 +45,7 @@ class _CameraViewMahasiswaState extends State<CameraViewMahasiswa> {
           Align(
             alignment: Alignment.bottomCenter,
             child: FloatingActionButton(
-              backgroundColor: Color(0xffACC196),
+              backgroundColor: Colors.white,
               child: const Icon(Icons.camera_alt),
               onPressed: () async {
                 // Show loading indicator
@@ -69,6 +69,7 @@ class _CameraViewMahasiswaState extends State<CameraViewMahasiswa> {
 
   void initCamera() {
     cameraController = CameraController(cameras[0], ResolutionPreset.max);
+    cameraController.setFlashMode(FlashMode.off);
     cameraController.initialize().then((_) {
       if (!mounted) {
         return;

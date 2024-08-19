@@ -96,6 +96,7 @@ class _AddAbsensiState extends State<AddAbsensi> with WidgetsBindingObserver {
   //Initialisasi Kamera
   void initCamera() {
     cameraController = CameraController(cameras[0], ResolutionPreset.max);
+    cameraController.setFlashMode(FlashMode.off);
     cameraController.initialize().then((_) {
       if (!mounted) {
         return;
