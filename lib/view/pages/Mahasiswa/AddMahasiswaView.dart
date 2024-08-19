@@ -223,8 +223,9 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
               child: FittedBox(
                 fit: BoxFit.cover,
                 child: Container(
-                    width: 100, // the actual width is not important here
-                    child: CameraPreview(cameraController!)),
+                    width: cameraController.value.previewSize!
+                        .width, // the actual width is not important here
+                    child: CameraPreview(cameraController)),
               )),
 
           // Existing Close Button
