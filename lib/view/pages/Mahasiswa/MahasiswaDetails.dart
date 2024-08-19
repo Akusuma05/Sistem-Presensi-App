@@ -35,9 +35,17 @@ class _MahasiswaDetailsState extends State<MahasiswaDetails> {
             icon: new Icon(Icons.arrow_back_ios_rounded));
       }),
       //Judul App Bar
-      title: Text(
-        widget.mahasiswa.Mahasiswa_Nama,
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      title: Column(
+        children: [
+          Text(
+            widget.mahasiswa.Mahasiswa_Nama,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            widget.mahasiswa.Mahasiswa_Id.toString(),
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
       centerTitle: true,
     );

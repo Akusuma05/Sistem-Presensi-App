@@ -75,6 +75,7 @@ class _AddKelasState extends State<AddKelas> {
           ),
         ),
         width: double.infinity,
+        height: double.infinity,
         child: Container(
           padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
           child: SingleChildScrollView(
@@ -149,7 +150,7 @@ class _AddKelasState extends State<AddKelas> {
 
                     //Tombol Add
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (ctrlName.text.toString() == "" ||
                             ctrlLocation.text.toString() == "" ||
                             ctrlKelasIdVarchar.text.toString() == "") {
@@ -166,7 +167,8 @@ class _AddKelasState extends State<AddKelas> {
                                 );
                               }))));
                         } else {
-                          if (InputKelas() != null) {
+                          dynamic response = await InputKelas();
+                          if (response) {
                             Fluttertoast.showToast(
                                 msg: "Kelas Berhasil Ditambahkan",
                                 toastLength: Toast.LENGTH_LONG,
@@ -231,21 +233,24 @@ class _AddKelasState extends State<AddKelas> {
 
   //Function Input Kelas
   Future<dynamic> InputKelas() async {
-    dynamic response = true;
+    dynamic success = true;
     await ApiServices.setKelas(ctrlName.text.toString(),
             ctrlLocation.text.toString(), ctrlKelasIdVarchar.text.toString())
         .then((value) async {
       // mark this function as async
       SelectedMahasiswaList = ctrlMahasiswa.selectedOptions;
       for (var i = 0; i < SelectedMahasiswaList.length; i++) {
-        await ApiServices.setKelasMahasiswa(
+        dynamic response = await ApiServices.setKelasMahasiswa(
             value[0].Kelas_Id, int.parse(SelectedMahasiswaList[i].value!));
+        if (response.statusCode != 201) {
+          success = false;
+        }
       }
       var key = GlobalKey<_HomeState>();
       Navigator.pushReplacement(this.context,
           MaterialPageRoute(builder: (context) => Homepage(key: key)));
     });
-    return response;
+    return success;
   }
 
   //Function Get Mahasiswa
