@@ -30,7 +30,7 @@ class _HomepageState extends State<Homepage> {
   NavigationBarTheme _buildNavbar() {
     return NavigationBarTheme(
       data: NavigationBarThemeData(
-        indicatorColor: Colors.blue.shade100,
+        indicatorColor: Color(0xffACC196),
       ),
       child: NavigationBar(
         height: 80,

@@ -32,16 +32,37 @@ class _AddAbsensiState extends State<AddAbsensi> with WidgetsBindingObserver {
     }
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: Container(
-                width: cameraController.value.previewSize!
-                    .width, // the actual width is not important here
-                child: CameraPreview(cameraController)),
-          )), //Camera Preview
+      body: Stack(
+        children: [
+          Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: Container(
+                    width: cameraController.value.previewSize!.width,
+                    child: CameraPreview(cameraController)),
+              )),
+          // Existing Close Button
+          Positioned(
+            top: 40.0,
+            right: 32.0,
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Color(0xffACC196),
+              child: IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ],
+      ), //Camera Preview
       //Tombol Camera
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Stack(
@@ -49,7 +70,7 @@ class _AddAbsensiState extends State<AddAbsensi> with WidgetsBindingObserver {
           Align(
             alignment: Alignment.bottomCenter,
             child: FloatingActionButton(
-              backgroundColor: Colors.white,
+              backgroundColor: Color(0xffACC196),
               child: const Icon(Icons.camera_alt),
               onPressed: () async {
                 // Show loading indicator

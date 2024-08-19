@@ -32,6 +32,7 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: Colors.blue.shade100,
           appBar: _buildAppBar(),
           body: _buildBottomSheet(),
         ),
@@ -43,6 +44,7 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
   //Build UI App Bar
   AppBar _buildAppBar() {
     return AppBar(
+      backgroundColor: Colors.blue.shade100,
       //Tombol Back
       leading: Builder(builder: (BuildContext context) {
         return IconButton(
@@ -60,139 +62,145 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
   }
 
   //Build UI Bottom Sheet
-  Expanded _buildBottomSheet() {
-    return Expanded(
-      child: Container(
-        //Bottom Sheet
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          border: Border.all(color: Colors.transparent),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        width: double.infinity,
-        height: double.infinity,
+  Padding _buildBottomSheet() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: Expanded(
         child: Container(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //Form Edit Mahasiswa
-                Form(
-                  child: Column(
-                    children: [
-                      // Text Field Nama Mahasiswa
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        decoration: InputDecoration(
-                          labelText: "Mahasiswa Name",
+          //Bottom Sheet
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.transparent),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          width: double.infinity,
+          height: double.infinity,
+          child: Container(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //Form Edit Mahasiswa
+                  Form(
+                    child: Column(
+                      children: [
+                        // Text Field Nama Mahasiswa
+                        TextFormField(
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                            labelText: "Mahasiswa Name",
+                          ),
+                          controller: ctrlName,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) => value.toString().isEmpty
+                              ? 'Please fill in the blank!'
+                              : null,
                         ),
-                        controller: ctrlName,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => value.toString().isEmpty
-                            ? 'Please fill in the blank!'
-                            : null,
-                      ),
 
-                      SizedBox(
-                        height: 16,
-                      ),
+                        SizedBox(
+                          height: 16,
+                        ),
 
-                      //Tombol Buka Kamera
-                      _buildOpenCameraButton(),
+                        //Tombol Buka Kamera
+                        _buildOpenCameraButton(),
 
-                      SizedBox(
-                        height: 16,
-                      ),
+                        SizedBox(
+                          height: 16,
+                        ),
 
-                      //Menampilkan Gambar Apabila Foto sudah diambil
-                      picture != null
-                          ? Container(
-                              height: MediaQuery.of(context).size.height *
-                                  0.5, // 20% of screen height
-                              child: Image.file(
-                                File(picture!.path),
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : SizedBox(),
+                        //Menampilkan Gambar Apabila Foto sudah diambil
+                        picture != null
+                            ? Container(
+                                height: MediaQuery.of(context).size.height *
+                                    0.5, // 20% of screen height
+                                child: Image.file(
+                                  File(picture!.path),
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : SizedBox(),
 
-                      SizedBox(
-                        height: 32,
-                      ),
+                        SizedBox(
+                          height: 32,
+                        ),
 
-                      //Tombol Submit
-                      ElevatedButton(
-                        onPressed: () async {
-                          // Show loading indicator
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return Center(child: CircularProgressIndicator());
-                            },
-                          );
-                          if (ctrlName.text.toString() == "") {
+                        //Tombol Submit
+                        ElevatedButton(
+                          onPressed: () async {
+                            // Show loading indicator
                             showDialog(
                               context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text("There is an Error!"),
-                                content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text("Please fill in the blanks!"),
-                                    ]),
-                              ),
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              },
                             );
-                          } else {
-                            if (mounted) {
-                              dynamic response = await updateMahasiswa(
-                                  picture,
-                                  ctrlName.text.toString(),
-                                  widget.mahasiswa.Mahasiswa_Id);
-                              //Function Save Mahasiswa
-                              if (response.statusCode == 200) {
-                                Navigator.pop(context);
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            Homepage(key: UniqueKey())));
-                                Fluttertoast.showToast(
-                                    msg: "Mahasiswa Berhasil Diedit",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.BOTTOM,
-                                    backgroundColor: Colors.green,
-                                    textColor: Colors.white,
-                                    fontSize: 14);
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "Edit Mahasiswa Gagal",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.BOTTOM,
-                                    backgroundColor: Colors.red,
-                                    textColor: Colors.white,
-                                    fontSize: 14);
+                            if (ctrlName.text.toString() == "") {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("There is an Error!"),
+                                  content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text("Please fill in the blanks!"),
+                                      ]),
+                                ),
+                              );
+                            } else {
+                              if (mounted) {
+                                dynamic response = await updateMahasiswa(
+                                    picture,
+                                    ctrlName.text.toString(),
+                                    widget.mahasiswa.Mahasiswa_Id);
+                                //Function Save Mahasiswa
+                                if (response.statusCode == 200) {
+                                  Navigator.pop(context);
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Homepage(key: UniqueKey())));
+                                  Fluttertoast.showToast(
+                                      msg: "Mahasiswa Berhasil Diedit",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.green,
+                                      textColor: Colors.white,
+                                      fontSize: 14);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Edit Mahasiswa Gagal",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 14);
+                                }
                               }
                             }
-                          }
-                        },
-                        //Tombol Submit
-                        child: Text(
-                          'Submit',
-                          style: TextStyle(color: Colors.white),
+                          },
+                          //Tombol Submit
+                          child: Text(
+                            'Submit',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xffACC196),
+                          ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -212,14 +220,14 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
       },
       icon: Icon(
         Icons.camera_alt_outlined,
-        color: Colors.white,
+        color: Colors.black,
       ),
       label: Text(
         'Capture Image',
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xffACC196),
       ),
     );
   }
@@ -243,18 +251,22 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
 
           // Existing Close Button
           Positioned(
-            top: 16.0,
-            right: 16.0,
-            child: IconButton(
-              icon: Icon(
-                Icons.close,
-                color: Colors.white,
+            top: 40.0,
+            right: 32.0,
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Color(0xffACC196),
+              child: IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  setState(() {
+                    showCameraPreview = false;
+                  });
+                },
               ),
-              onPressed: () {
-                setState(() {
-                  showCameraPreview = false;
-                });
-              },
             ),
           ),
 
@@ -264,6 +276,7 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: FloatingActionButton(
+                backgroundColor: Color(0xffACC196),
                 onPressed: () async {
                   await _takePicture();
                   setState(() {

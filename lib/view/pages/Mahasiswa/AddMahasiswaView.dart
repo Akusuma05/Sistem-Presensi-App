@@ -35,6 +35,7 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: Colors.blue.shade100,
           appBar: _buildAppBar(),
           body: _buildBottomSheet(),
         ),
@@ -48,6 +49,7 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
   //Build UI App Bar
   AppBar _buildAppBar() {
     return AppBar(
+      backgroundColor: Colors.blue.shade100,
       //Tombol Back
       leading: Builder(builder: (BuildContext context) {
         return IconButton(
@@ -65,143 +67,148 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
   }
 
   //Build UI Bottom Sheet
-  Expanded _buildBottomSheet() {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          border: Border.all(color: Colors.transparent),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+  Padding _buildBottomSheet() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Expanded(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.transparent),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
           ),
-        ),
-        width: double.infinity,
-        height: double.infinity,
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+          width: double.infinity,
+          height: double.infinity,
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
 
-            //Form Nama dan Foto
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Form(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        decoration: InputDecoration(
-                          labelText: "Mahasiswa NIM",
+              //Form Nama dan Foto
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Form(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                            labelText: "Mahasiswa NIM",
+                          ),
+                          controller: ctrlNIM,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) => value.toString().isEmpty
+                              ? 'Please fill in the blank!'
+                              : null,
                         ),
-                        controller: ctrlNIM,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => value.toString().isEmpty
-                            ? 'Please fill in the blank!'
-                            : null,
-                      ),
 
-                      SizedBox(
-                        height: 16,
-                      ),
-
-                      //Input Nama
-                      TextFormField(
-                        keyboardType: TextInputType.name,
-                        decoration: InputDecoration(
-                          labelText: "Mahasiswa Name",
+                        SizedBox(
+                          height: 16,
                         ),
-                        controller: ctrlName,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) => value.toString().isEmpty
-                            ? 'Please fill in the blank!'
-                            : null,
-                      ),
 
-                      SizedBox(
-                        height: 16,
-                      ),
+                        //Input Nama
+                        TextFormField(
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                            labelText: "Mahasiswa Name",
+                          ),
+                          controller: ctrlName,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (value) => value.toString().isEmpty
+                              ? 'Please fill in the blank!'
+                              : null,
+                        ),
 
-                      _buildOpenCameraButton(),
+                        SizedBox(
+                          height: 16,
+                        ),
 
-                      SizedBox(
-                        height: 16,
-                      ),
+                        _buildOpenCameraButton(),
 
-                      //Menunjukan Gambar Apabila foto sudah diambil
-                      mahasiswaFoto != null
-                          ? Container(
-                              height: MediaQuery.of(context).size.height *
-                                  0.5, // 20% of screen height
-                              child: Image.file(
-                                File(mahasiswaFoto!.path),
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : SizedBox(),
+                        SizedBox(
+                          height: 16,
+                        ),
 
-                      SizedBox(
-                        height: 32,
-                      ),
+                        //Menunjukan Gambar Apabila foto sudah diambil
+                        mahasiswaFoto != null
+                            ? Container(
+                                height: MediaQuery.of(context).size.height *
+                                    0.5, // 20% of screen height
+                                child: Image.file(
+                                  File(mahasiswaFoto!.path),
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : SizedBox(),
 
-                      //Tombol Submit
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (ctrlName.text.toString() == "" ||
-                              ctrlNIM.text.toString() == "") {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text("There is an Error!"),
-                                content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text("Please fill in the blanks!"),
-                                    ]),
-                              ),
-                            );
-                          } else {
-                            if (mounted) {
-                              dynamic response =
-                                  await mahasiswaController.AddMahasiswaTombol(
-                                      mahasiswaFoto!,
-                                      ctrlNIM.text,
-                                      ctrlName.text,
-                                      this.context);
-                              if (response.statusCode == 201) {
-                                Fluttertoast.showToast(
-                                    msg: "Mahasiswa Berhasil Ditambahkan",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.BOTTOM,
-                                    backgroundColor: Colors.green,
-                                    textColor: Colors.white,
-                                    fontSize: 14);
-                              } else {
-                                Fluttertoast.showToast(
-                                    msg: "Penambahan Mahasiswa Gagal",
-                                    toastLength: Toast.LENGTH_LONG,
-                                    gravity: ToastGravity.BOTTOM,
-                                    backgroundColor: Colors.red,
-                                    textColor: Colors.white,
-                                    fontSize: 14);
-                              }
-                            }
-                          }
-                        },
+                        SizedBox(
+                          height: 32,
+                        ),
 
                         //Tombol Submit
-                        child: Text(
-                          'Submit',
-                          style: TextStyle(color: Colors.white),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (ctrlName.text.toString() == "" ||
+                                ctrlNIM.text.toString() == "") {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("There is an Error!"),
+                                  content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text("Please fill in the blanks!"),
+                                      ]),
+                                ),
+                              );
+                            } else {
+                              if (mounted) {
+                                dynamic response = await mahasiswaController
+                                    .AddMahasiswaTombol(
+                                        mahasiswaFoto!,
+                                        ctrlNIM.text,
+                                        ctrlName.text,
+                                        this.context);
+                                if (response.statusCode == 201) {
+                                  Fluttertoast.showToast(
+                                      msg: "Mahasiswa Berhasil Ditambahkan",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.green,
+                                      textColor: Colors.white,
+                                      fontSize: 14);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Penambahan Mahasiswa Gagal",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 14);
+                                }
+                              }
+                            }
+                          },
+
+                          //Tombol Submit
+                          child: Text(
+                            'Submit',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xffACC196),
+                          ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -230,18 +237,22 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
 
           // Existing Close Button
           Positioned(
-            top: 16.0,
-            right: 16.0,
-            child: IconButton(
-              icon: Icon(
-                Icons.close,
-                color: Colors.white,
+            top: 40.0,
+            right: 32.0,
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Color(0xffACC196),
+              child: IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  setState(() {
+                    showCameraPreview = false;
+                  });
+                },
               ),
-              onPressed: () {
-                setState(() {
-                  showCameraPreview = false;
-                });
-              },
             ),
           ),
 
@@ -251,6 +262,7 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: FloatingActionButton(
+                backgroundColor: Color(0xffACC196),
                 onPressed: () async {
                   await _takePicture();
                   setState(() {
@@ -279,15 +291,16 @@ class _AddMahasiswaViewState extends State<AddMahasiswaView> {
       },
       icon: Icon(
         Icons.camera_alt_outlined,
-        color: Colors.white, // Change the color of the icon to white
+        color: Colors.black, // Change the color of the icon to white
       ),
-      label: Text(
-        'Capture Image',
-        style: TextStyle(
-            color: Colors.white), // Change the color of the text to white
-      ),
+      label: Text('Capture Image',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ) // Change the color of the text to white
+          ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
+        backgroundColor: Color(0xffACC196),
       ),
     );
   }

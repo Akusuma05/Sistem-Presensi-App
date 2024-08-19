@@ -18,6 +18,7 @@ class _MahasiswaDetailsState extends State<MahasiswaDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue.shade100,
       appBar: _buildAppBar(),
       body: _buildBottomSheet(),
     );
@@ -26,6 +27,7 @@ class _MahasiswaDetailsState extends State<MahasiswaDetails> {
   //Build UI App Bar
   AppBar _buildAppBar() {
     return AppBar(
+      backgroundColor: Colors.blue.shade100,
       //Tombol Back
       leading: Builder(builder: (BuildContext context) {
         return IconButton(
@@ -52,38 +54,41 @@ class _MahasiswaDetailsState extends State<MahasiswaDetails> {
   }
 
   //Build UI Bottom Sheet
-  Expanded _buildBottomSheet() {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          border: Border.all(color: Colors.transparent),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        width: double.infinity,
+  Padding _buildBottomSheet() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: Expanded(
         child: Container(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //Gambar Mahasiswa
-              Image(
-                key: UniqueKey(),
-                image: NetworkImage(
-                  'http://' +
-                      Const.baseUrl +
-                      '/api/images/' +
-                      widget.mahasiswa.Mahasiswa_Foto,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.transparent),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          width: double.infinity,
+          child: Container(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //Gambar Mahasiswa
+                Image(
+                  key: UniqueKey(),
+                  image: NetworkImage(
+                    'http://' +
+                        Const.baseUrl +
+                        '/api/images/' +
+                        widget.mahasiswa.Mahasiswa_Foto,
+                  ),
+                  loadingBuilder: (context, imageProvider, loadingProgress) {
+                    if (loadingProgress == null) return imageProvider;
+                    return CircularProgressIndicator();
+                  },
                 ),
-                loadingBuilder: (context, imageProvider, loadingProgress) {
-                  if (loadingProgress == null) return imageProvider;
-                  return CircularProgressIndicator();
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

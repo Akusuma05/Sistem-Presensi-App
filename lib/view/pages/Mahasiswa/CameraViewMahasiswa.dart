@@ -45,7 +45,7 @@ class _CameraViewMahasiswaState extends State<CameraViewMahasiswa> {
           Align(
             alignment: Alignment.bottomCenter,
             child: FloatingActionButton(
-              backgroundColor: Colors.white,
+              backgroundColor: Color(0xffACC196),
               child: const Icon(Icons.camera_alt),
               onPressed: () async {
                 // Show loading indicator

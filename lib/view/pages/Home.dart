@@ -14,9 +14,14 @@ class _HomeState extends State<Home> {
   List<Kelas> kelasList = [];
   List<Kelas> searchKelasList = [];
 
+  final now = DateTime.now();
+  String greeting = "";
+  String message = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.blue.shade100,
         body: Stack(
           children: [
             SafeArea(
@@ -40,7 +45,21 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     getKelas();
+    customText();
     super.initState();
+  }
+
+  void customText() {
+    if (now.hour >= 5 && now.hour < 12) {
+      greeting = "Selamat Pagi";
+      message = "Semoga Harimu Berjalan dengan Lancar!";
+    } else if (now.hour >= 12 && now.hour < 17) {
+      greeting = "Selamat Siang";
+      message = "Semoga pekerjaanmu lancar hari ini.";
+    } else {
+      greeting = "Selamat Malam";
+      message = "Selamat beristirahat!";
+    }
   }
 
   //Build UI Header
@@ -49,18 +68,18 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.only(bottom: 32, top: 32, left: 16, right: 8),
       child: Row(
         children: [
-          const Column(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //Text Selamat Pagi
               Text(
-                "Selamat Pagi",
+                greeting,
                 textAlign: TextAlign.left,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
               ),
               //Text Semoga Harimu Berjalan Lancar
               Text(
-                "Semoga Harimu Berjalan dengan Lancar!",
+                message,
                 textAlign: TextAlign.left,
               ),
             ],
@@ -85,40 +104,43 @@ class _HomeState extends State<Home> {
   //Build UI Bottom Sheet
   Expanded _buildBottomSheet() {
     return Expanded(
-      child: Container(
-        //Box Rounded Corner
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          border: Border.all(color: Colors.transparent),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: Container(
+          //Box Rounded Corner
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.transparent),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
           ),
-        ),
-        width: double.infinity,
+          width: double.infinity,
 
-        //Isi dari Bottom Sheet
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(22, 16, 8, 0),
-              //Tulisan Classes
-              child: Text(
-                "Classes",
-                textAlign: TextAlign.left,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+          //Isi dari Bottom Sheet
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(22, 16, 8, 0),
+                //Tulisan Classes
+                child: Text(
+                  "Classes",
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
-            ),
 
-            //Search Bar
-            _buildSearchBar(),
-            //Kelas Card View
-            _buildListViewKelasCardView(),
-          ],
+              //Search Bar
+              _buildSearchBar(),
+              //Kelas Card View
+              _buildListViewKelasCardView(),
+            ],
+          ),
         ),
       ),
     );
@@ -129,9 +151,9 @@ class _HomeState extends State<Home> {
     return FloatingActionButton.extended(
       label: const Text(
         "ADD KELAS",
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xffACC196),
       onPressed: () {
         Navigator.push(
             this.context, MaterialPageRoute(builder: (context) => AddKelas()));

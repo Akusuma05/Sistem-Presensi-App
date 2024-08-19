@@ -23,6 +23,7 @@ class _MahasiswaViewState extends State<MahasiswaView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue.shade100,
       appBar: _buildAppBar(),
       body: _buildMahasiswaListView(),
       floatingActionButton: _buildAddMahasiswaButton(),
@@ -32,6 +33,7 @@ class _MahasiswaViewState extends State<MahasiswaView> {
   //Build UI AppBar
   AppBar _buildAppBar() {
     return AppBar(
+      backgroundColor: Colors.blue.shade100,
       //Judul App Bar
       title: Text(
         "Mahasiswa",
@@ -42,38 +44,41 @@ class _MahasiswaViewState extends State<MahasiswaView> {
   }
 
   //Build UI Mahasiswa ListView
-  RefreshIndicator _buildMahasiswaListView() {
-    return RefreshIndicator(
-      onRefresh: () => getMahasiswa(),
-      child: Column(
-        children: [
-          //Bottom Sheet
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(color: Colors.transparent),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              width: double.infinity,
+  Padding _buildMahasiswaListView() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: RefreshIndicator(
+        onRefresh: () => getMahasiswa(),
+        child: Column(
+          children: [
+            //Bottom Sheet
+            Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    //Search Bar
-                    _buildSearchBar(),
-                    //Card List Mahasiswa
-                    _buildMahasiswaCardListView(),
-                  ],
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.transparent),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                width: double.infinity,
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //Search Bar
+                      _buildSearchBar(),
+                      //Card List Mahasiswa
+                      _buildMahasiswaCardListView(),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -165,9 +170,9 @@ class _MahasiswaViewState extends State<MahasiswaView> {
     return FloatingActionButton.extended(
       label: const Text(
         "ADD MAHASISWA",
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xffACC196),
       onPressed: () {
         Navigator.push(this.context,
             MaterialPageRoute(builder: (context) => AddMahasiswaView()));

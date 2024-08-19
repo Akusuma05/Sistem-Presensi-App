@@ -23,6 +23,7 @@ class _AbsensiViewState extends State<AbsensiView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue.shade100,
       //App Bar
       appBar: _buildAppBar(),
       //Bottom Sheet
@@ -35,6 +36,7 @@ class _AbsensiViewState extends State<AbsensiView> {
   //Build UI App Bar
   AppBar _buildAppBar() {
     return AppBar(
+      backgroundColor: Colors.blue.shade100,
       //Tombol Back App Bar
       leading: Builder(builder: (BuildContext context) {
         return IconButton(
@@ -53,74 +55,78 @@ class _AbsensiViewState extends State<AbsensiView> {
   }
 
   //Build UI Bottom Sheet
-  RefreshIndicator _buildBottomSheet() {
-    return RefreshIndicator(
-      onRefresh: getAbsensi,
-      child: Column(
-        children: [
-          //Bottom Sheet
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                border: Border.all(color: Colors.transparent),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              width: double.infinity,
+  Padding _buildBottomSheet() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: RefreshIndicator(
+        onRefresh: getAbsensi,
+        child: Column(
+          children: [
+            //Bottom Sheet
+            Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.transparent),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                width: double.infinity,
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
 
-                //Card List Absensi
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: LoadingAbsensi
-                          ? Center(
-                              child:
-                                  CircularProgressIndicator()) //Animasi Loading
-                          //Card List Builder Absensi
-                          : ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                              itemCount: AbsensiList.length,
-                              itemBuilder: (context, index) {
-                                return Slidable(
-                                  key: ValueKey(AbsensiList[index].Absensi_Id),
-                                  startActionPane: ActionPane(
-                                    motion: const ScrollMotion(),
-                                    children: [
-                                      //Tombol Delete
-                                      SlidableAction(
-                                        onPressed: (context) => deleteAbsensi(
-                                            AbsensiList[index].Absensi_Id),
-                                        backgroundColor: Color(0xFFFE4A49),
-                                        foregroundColor: Colors.white,
-                                        icon: Icons.delete,
-                                        label: 'Delete',
-                                      ),
-                                    ],
-                                  ),
-                                  child: LazyLoadingList(
-                                    initialSizeOfItems: 10,
-                                    loadMore: () {},
-                                    child: AbsensiCard(AbsensiList[index]),
-                                    index: index,
-                                    hasMore: true,
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
-                  ],
+                  //Card List Absensi
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: LoadingAbsensi
+                            ? Center(
+                                child:
+                                    CircularProgressIndicator()) //Animasi Loading
+                            //Card List Builder Absensi
+                            : ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                itemCount: AbsensiList.length,
+                                itemBuilder: (context, index) {
+                                  return Slidable(
+                                    key:
+                                        ValueKey(AbsensiList[index].Absensi_Id),
+                                    startActionPane: ActionPane(
+                                      motion: const ScrollMotion(),
+                                      children: [
+                                        //Tombol Delete
+                                        SlidableAction(
+                                          onPressed: (context) => deleteAbsensi(
+                                              AbsensiList[index].Absensi_Id),
+                                          backgroundColor: Color(0xFFFE4A49),
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
+                                          label: 'Delete',
+                                        ),
+                                      ],
+                                    ),
+                                    child: LazyLoadingList(
+                                      initialSizeOfItems: 10,
+                                      loadMore: () {},
+                                      child: AbsensiCard(AbsensiList[index]),
+                                      index: index,
+                                      hasMore: true,
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -130,9 +136,9 @@ class _AbsensiViewState extends State<AbsensiView> {
     return FloatingActionButton.extended(
       label: const Text(
         "ADD ABSENSI",
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xffACC196),
       onPressed: () {
         Navigator.push(
             this.context,

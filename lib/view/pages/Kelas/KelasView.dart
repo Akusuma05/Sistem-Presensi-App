@@ -36,6 +36,7 @@ class _KelasViewState extends State<KelasView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue.shade100,
       //App Bar
       appBar: _buildAppBar(),
 
@@ -50,6 +51,7 @@ class _KelasViewState extends State<KelasView> {
   //Build UI App Bar
   AppBar _buildAppBar() {
     return AppBar(
+      backgroundColor: Colors.blue.shade100,
       leading: Builder(builder: (BuildContext context) {
         return IconButton(
             onPressed: () {
@@ -88,79 +90,82 @@ class _KelasViewState extends State<KelasView> {
   }
 
   //Build UI Bottom Sheet
-  Expanded _buildBottomSheet() {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          border: Border.all(color: Colors.transparent),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        width: double.infinity,
+  Padding _buildBottomSheet() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: Expanded(
         child: Container(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //Search Bar
-              Padding(
-                padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
-                child: SizedBox(
-                  height: 40,
-                  child: TextField(
-                    controller: searchController,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(8),
-                        hintText: "Search",
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(24.0)))),
-                    onChanged: (value) {
-                      filterSearchResults(value);
-                    },
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.transparent),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          width: double.infinity,
+          child: Container(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //Search Bar
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
+                  child: SizedBox(
+                    height: 40,
+                    child: TextField(
+                      controller: searchController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(8),
+                          hintText: "Search",
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(24.0)))),
+                      onChanged: (value) {
+                        filterSearchResults(value);
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Flexible(
-                child: _isLoadingMahasiswa &&
-                        _isLoadingMahasiswaSudahAbsen &&
-                        _isLoadingKelasMahasiswa
-                    ? Center(child: CircularProgressIndicator())
-                    : RefreshIndicator(
-                        // Only show RefreshIndicator when data is loaded
-                        onRefresh: () async {
-                          await getMahasiswaSudahAbsen(widget.kelas.Kelas_Id);
-                          await getMahasiswaByKelasId(widget.kelas.Kelas_Id);
-                        },
-                        child: ListView.builder(
-                          key: UniqueKey(),
-                          scrollDirection: Axis.vertical,
-                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                          itemCount: searchMahasiswaList.length,
-                          itemBuilder: (context, index) {
-                            return LazyLoadingList(
-                              initialSizeOfItems: 10,
-                              loadMore: () {},
-                              child: StudentCard(
-                                  searchMahasiswaList[index],
-                                  widget.kelas.Kelas_Id,
-                                  mahasiswaSudahAbsenList.any(
-                                      (MahasiswaSudahAbsen) =>
-                                          MahasiswaSudahAbsen.mahasiswaId ==
-                                          mahasiswaList[index].Mahasiswa_Id)),
-                              index: index,
-                              hasMore: true,
-                            );
+                Flexible(
+                  child: _isLoadingMahasiswa &&
+                          _isLoadingMahasiswaSudahAbsen &&
+                          _isLoadingKelasMahasiswa
+                      ? Center(child: CircularProgressIndicator())
+                      : RefreshIndicator(
+                          // Only show RefreshIndicator when data is loaded
+                          onRefresh: () async {
+                            await getMahasiswaSudahAbsen(widget.kelas.Kelas_Id);
+                            await getMahasiswaByKelasId(widget.kelas.Kelas_Id);
                           },
+                          child: ListView.builder(
+                            key: UniqueKey(),
+                            scrollDirection: Axis.vertical,
+                            padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                            itemCount: searchMahasiswaList.length,
+                            itemBuilder: (context, index) {
+                              return LazyLoadingList(
+                                initialSizeOfItems: 10,
+                                loadMore: () {},
+                                child: StudentCard(
+                                    searchMahasiswaList[index],
+                                    widget.kelas.Kelas_Id,
+                                    mahasiswaSudahAbsenList.any(
+                                        (MahasiswaSudahAbsen) =>
+                                            MahasiswaSudahAbsen.mahasiswaId ==
+                                            mahasiswaList[index].Mahasiswa_Id)),
+                                index: index,
+                                hasMore: true,
+                              );
+                            },
+                          ),
                         ),
-                      ),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -172,9 +177,9 @@ class _KelasViewState extends State<KelasView> {
     return FloatingActionButton.extended(
       label: const Text(
         "ADD ABSENSI",
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xffACC196),
       onPressed: () {
         Navigator.push(
             this.context,

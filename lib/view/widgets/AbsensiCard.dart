@@ -15,7 +15,7 @@ class _AbsensiCardState extends State<AbsensiCard> {
 
     return Container(
       child: Card(
-        color: Colors.white,
+        color: Color(0xffC98DB5),
         margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
