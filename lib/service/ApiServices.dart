@@ -113,8 +113,7 @@ class ApiServices {
     // Send the request and decode response
     var response = await request.send();
     if (response.statusCode == 200) {
-      var responseBody = await response.stream.bytesToString();
-      return json.decode(responseBody);
+      return response;
     } else {
       // Handle error based on status code
       throw Exception('Failed to update Kelas: ${response.statusCode}');
@@ -177,15 +176,16 @@ class ApiServices {
 
   //Create Absensi
   static Future<dynamic> postMahasiswa(
-      File Mahasiswa_Foto, String Mahasiswa_Nama) async {
+      File mahasiswaFoto, String mahasiswaNIM, String mahasiswaNama) async {
     var url = Uri.http(Const.baseUrl, "/api/Mahasiswa");
     var request = MultipartRequest('POST', url);
 
-    request.fields['Mahasiswa_Nama'] = Mahasiswa_Nama.toString();
+    request.fields['Mahasiswa_Id'] = mahasiswaNIM.toString();
+    request.fields['Mahasiswa_Nama'] = mahasiswaNama.toString();
 
     // Add image as multipart file
     var multipartFile =
-        await MultipartFile.fromPath('Mahasiswa_Foto', Mahasiswa_Foto.path);
+        await MultipartFile.fromPath('Mahasiswa_Foto', mahasiswaFoto.path);
     request.files.add(multipartFile);
 
     // Send the request and decode response
@@ -324,8 +324,8 @@ class ApiServices {
     // Send the request and decode response
     var response = await request.send();
     if (response.statusCode == 201) {
-      var responseBody = await response.stream.bytesToString();
-      return json.decode(responseBody);
+      // var responseBody = await response.stream.bytesToString();
+      return response;
     } else {
       // Handle error based on status code
       throw Exception(
@@ -426,6 +426,26 @@ class ApiServices {
       return mahasiswaList;
     } else {
       throw Exception('Failed to load Mahasiswa');
+    }
+  }
+
+  //Delete KelasaMahasiswa
+  static Future<dynamic> deleteAbsensi(int absensiId) async {
+    final response = await http.delete(
+      Uri.http(Const.baseUrl, "/api/Absensi/$absensiId"),
+    );
+
+    if (response.statusCode == 202) {
+      print(
+          'DEBUG APIService deleteAbsensi: Absensi with ID $absensiId deleted successfully.');
+      return response;
+    } else {
+      print(
+          'DEBUG APIService deleteAbsensi: Failed to delete Absensi with ID $absensiId response Code:' +
+              response.statusCode.toString() +
+              '\n response body:' +
+              response.body);
+      return response;
     }
   }
 }

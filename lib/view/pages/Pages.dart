@@ -25,7 +25,6 @@ import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 part 'Absensi/AbsensiView.dart';
 part 'Absensi/AddAbsensi.dart';
-part 'Absensi/EditAbsensi.dart';
 part 'Kelas/AddKelas.dart';
 part 'Kelas/EditKelas.dart';
 part 'Kelas/KelasView.dart';

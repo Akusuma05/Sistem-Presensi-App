@@ -12,11 +12,209 @@ class _EditKelasState extends State<EditKelas> {
   final ctrlName = TextEditingController();
   final ctrlLocation = TextEditingController();
   final ctrlKelasIdvarchar = TextEditingController();
-  final MultiSelectController MahasiswaController = MultiSelectController();
+
+  final MultiSelectController mahasiswaSelectController =
+      MultiSelectController();
+
   List<Mahasiswa> selectedmahasiswaList = [];
   List<Mahasiswa> selectedmahasiswaListBaru = [];
   List<Mahasiswa> MahasiswaList = [];
   List<KelasMahasiswa> KelasMahasiswaList = [];
+
+  @override
+  void dispose() {
+    ctrlName.dispose();
+    ctrlLocation.dispose();
+    ctrlKelasIdvarchar.dispose();
+    MahasiswaList = [];
+    selectedmahasiswaListBaru = [];
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    GetMahasiswa();
+    getMahasiswaByKelasId(widget.kelas.Kelas_Id);
+    getKelasMahasiswaByKelasId(widget.kelas.Kelas_Id);
+    ctrlName.text = widget.kelas.Kelas_Nama;
+    ctrlLocation.text = widget.kelas.Kelas_Lokasi;
+    ctrlKelasIdvarchar.text = widget.kelas.Kelas_Id_varchar;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        //AppBar
+        appBar: _buildAppBar(),
+        //Body
+        body: _buildBottomSheet());
+  }
+
+  //Build UI App Bar
+  AppBar _buildAppBar() {
+    return AppBar(
+      leading: Builder(builder: (BuildContext context) {
+        return IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: new Icon(Icons.arrow_back_ios_rounded));
+      }),
+      title: Text(
+        "Edit Kelas",
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  //Build UI Bottom Sheet
+  Expanded _buildBottomSheet() {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          border: Border.all(color: Colors.transparent),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        width: double.infinity,
+        height: double.infinity,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Form(
+                  child: Column(children: [
+                    //Text Field Class Id
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        labelText: "Class Id",
+                      ),
+                      controller: ctrlKelasIdvarchar,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null;
+                      },
+                    ),
+
+                    SizedBox(
+                      height: 16,
+                    ),
+
+                    buildMultiSelectField(),
+
+                    SizedBox(
+                      height: 8,
+                    ),
+
+                    //Text Field Class Name
+                    TextFormField(
+                      keyboardType: TextInputType.name,
+                      decoration: InputDecoration(
+                        labelText: "Class Name",
+                      ),
+                      controller: ctrlName,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null;
+                      },
+                    ),
+
+                    SizedBox(
+                      height: 16,
+                    ),
+
+                    //Text Field Class Location
+                    TextFormField(
+                      keyboardType: TextInputType.name,
+                      decoration: InputDecoration(
+                        labelText: "Class Location",
+                      ),
+                      controller: ctrlLocation,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null;
+                      },
+                    ),
+
+                    SizedBox(
+                      height: 16,
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (ctrlName.text.toString() == "" ||
+                            ctrlLocation.text.toString() == "" ||
+                            ctrlKelasIdvarchar.text.toString() == "") {
+                          showDialog(
+                              context: context,
+                              builder: ((((context) {
+                                return AlertDialog(
+                                  title: Text("There is an Error!"),
+                                  content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text("Please fill in the blanks!"),
+                                      ]),
+                                );
+                              }))));
+                        } else {
+                          dynamic response = await EditKelas(
+                              widget.kelas.Kelas_Id,
+                              ctrlName.text.toString(),
+                              ctrlLocation.text.toString(),
+                              ctrlKelasIdvarchar.text.toString(),
+                              selectedmahasiswaList,
+                              mahasiswaSelectController.selectedOptions);
+                          if (response == true) {
+                            Fluttertoast.showToast(
+                                msg: "Kelas Berhasil Diedit",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.green,
+                                textColor: Colors.white,
+                                fontSize: 14);
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Kelas Gagal Diedit",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 14);
+                          }
+                        }
+                      },
+                      child: const Text(
+                        'SAVE',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                      ),
+                    )
+                  ]),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Future<List<Mahasiswa>> getMahasiswaByKelasId(int Kelas_Id) async {
     List<Mahasiswa> mahasiswaList = []; // Initialize as an empty list
@@ -45,10 +243,43 @@ class _EditKelasState extends State<EditKelas> {
     print(KelasMahasiswaList.toString());
   }
 
-  void compareAndDeleteKelasMahasiswa(
+  Future<dynamic> EditKelas(
+      int Kelas_Id,
+      String Kelas_Nama,
+      String Kelas_Lokasi,
+      String Kelas_Id_varchar,
+      List<Mahasiswa> selectedMahasiswaList,
+      List<ValueItem> selectedMahasiswaListBaru) async {
+    dynamic response = await ApiServices.updateKelas(
+        Kelas_Id, Kelas_Nama, Kelas_Lokasi, Kelas_Id_varchar);
+    dynamic responseKelasMahasiswa = await compareAndDeleteKelasMahasiswa(
+        selectedMahasiswaList, selectedMahasiswaListBaru);
+    // Create a new GlobalKey
+    var key = GlobalKey<_HomeState>();
+    Navigator.pushReplacement(this.context,
+        MaterialPageRoute(builder: (context) => Homepage(key: key)));
+
+    if (response.statusCode == 200 || responseKelasMahasiswa == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<dynamic> DeleteKelasMahasiswa(int KelasMahasiswa_Id) async {
+    dynamic response = true;
+
+    // Wait for the deletion operation to complete
+    await ApiServices.deleteKelasMahasiswa(KelasMahasiswa_Id);
+
+    return response;
+  }
+
+  Future<dynamic> compareAndDeleteKelasMahasiswa(
     List<Mahasiswa> selectedMahasiswaList,
     List<ValueItem> selectedMahasiswaListBaru,
   ) async {
+    bool success = true;
     // Find mahasiswa IDs in selectedMahasiswaList but not in selectedMahasiswaListBaru
     print(selectedMahasiswaList);
     print(selectedMahasiswaListBaru);
@@ -103,7 +334,15 @@ class _EditKelasState extends State<EditKelas> {
     for (int mahasiswaId in mahasiswaIdsToAdd) {
       print("Debug Mahasiswa_ID Add: " + mahasiswaId.toString());
       print("Debug Kelas_ID Add: " + widget.kelas.Kelas_Id.toString());
-      await ApiServices.setKelasMahasiswa(widget.kelas.Kelas_Id, mahasiswaId);
+      dynamic response = await ApiServices.setKelasMahasiswa(
+          widget.kelas.Kelas_Id, mahasiswaId);
+      if (response.statusCode != 201) {
+        success = false;
+      }
+    }
+
+    if (success) {
+      return true;
     }
   }
 
@@ -118,34 +357,6 @@ class _EditKelasState extends State<EditKelas> {
       }
     }
     return -1;
-  }
-
-  Future<dynamic> EditKelas(
-      int Kelas_Id,
-      String Kelas_Nama,
-      String Kelas_Lokasi,
-      String Kelas_Id_varchar,
-      List<Mahasiswa> selectedMahasiswaList,
-      List<ValueItem> selectedMahasiswaListBaru) async {
-    dynamic response = true;
-    await ApiServices.updateKelas(
-        Kelas_Id, Kelas_Nama, Kelas_Lokasi, Kelas_Id_varchar);
-    compareAndDeleteKelasMahasiswa(
-        selectedMahasiswaList, selectedMahasiswaListBaru);
-    // Create a new GlobalKey
-    var key = GlobalKey<_HomeState>();
-    Navigator.pushReplacement(this.context,
-        MaterialPageRoute(builder: (context) => Homepage(key: key)));
-    return response;
-  }
-
-  Future<dynamic> DeleteKelasMahasiswa(int KelasMahasiswa_Id) async {
-    dynamic response = true;
-
-    // Wait for the deletion operation to complete
-    await ApiServices.deleteKelasMahasiswa(KelasMahasiswa_Id);
-
-    return response;
   }
 
   List<ValueItem> getCombinedOptions() {
@@ -177,7 +388,7 @@ class _EditKelasState extends State<EditKelas> {
               CircularProgressIndicator()); // Show a loading indicator while data is fetched
     } else {
       return MultiSelectDropDown(
-        controller: MahasiswaController,
+        controller: mahasiswaSelectController,
         searchEnabled: true,
         onOptionSelected: (options) {
           debugPrint(options.toString());
@@ -197,198 +408,5 @@ class _EditKelasState extends State<EditKelas> {
         selectedOptionIcon: const Icon(Icons.check_circle),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    ctrlName.dispose();
-    ctrlLocation.dispose();
-    ctrlKelasIdvarchar.dispose();
-    MahasiswaList = [];
-    selectedmahasiswaListBaru = [];
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    GetMahasiswa();
-    getMahasiswaByKelasId(widget.kelas.Kelas_Id);
-    getKelasMahasiswaByKelasId(widget.kelas.Kelas_Id);
-    ctrlName.text = widget.kelas.Kelas_Nama;
-    ctrlLocation.text = widget.kelas.Kelas_Lokasi;
-    ctrlKelasIdvarchar.text = widget.kelas.Kelas_Id_varchar;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          leading: Builder(builder: (BuildContext context) {
-            return IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: new Icon(Icons.arrow_back_ios_rounded));
-          }),
-          title: Text(
-            "Edit Kelas",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
-        //Body
-        body: Column(
-          children: [
-            //Bottom Sheet
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  border: Border.all(color: Colors.transparent),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                width: double.infinity,
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Form(
-                          child: Column(children: [
-                            //Text Field Class Id
-                            TextFormField(
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(
-                                labelText: "Class Id",
-                              ),
-                              controller: ctrlKelasIdvarchar,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                return value.toString().isEmpty
-                                    ? 'Please fill in the blank!'
-                                    : null;
-                              },
-                            ),
-
-                            SizedBox(
-                              height: 16,
-                            ),
-
-                            buildMultiSelectField(),
-
-                            SizedBox(
-                              height: 8,
-                            ),
-
-                            //Text Field Class Name
-                            TextFormField(
-                              keyboardType: TextInputType.name,
-                              decoration: InputDecoration(
-                                labelText: "Class Name",
-                              ),
-                              controller: ctrlName,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                return value.toString().isEmpty
-                                    ? 'Please fill in the blank!'
-                                    : null;
-                              },
-                            ),
-
-                            SizedBox(
-                              height: 16,
-                            ),
-
-                            //Text Field Class Location
-                            TextFormField(
-                              keyboardType: TextInputType.name,
-                              decoration: InputDecoration(
-                                labelText: "Class Location",
-                              ),
-                              controller: ctrlLocation,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                return value.toString().isEmpty
-                                    ? 'Please fill in the blank!'
-                                    : null;
-                              },
-                            ),
-
-                            SizedBox(
-                              height: 16,
-                            ),
-
-                            ElevatedButton(
-                              onPressed: () {
-                                if (ctrlName.text.toString() == "" ||
-                                    ctrlLocation.text.toString() == "" ||
-                                    ctrlKelasIdvarchar.text.toString() == "") {
-                                  showDialog(
-                                      context: context,
-                                      builder: ((((context) {
-                                        return AlertDialog(
-                                          title: Text("There is an Error!"),
-                                          content: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                    "Please fill in the blanks!"),
-                                              ]),
-                                        );
-                                      }))));
-                                } else {
-                                  if (EditKelas(
-                                          widget.kelas.Kelas_Id,
-                                          ctrlName.text.toString(),
-                                          ctrlLocation.text.toString(),
-                                          ctrlKelasIdvarchar.text.toString(),
-                                          selectedmahasiswaList,
-                                          MahasiswaController
-                                              .selectedOptions) !=
-                                      null) {
-                                    Fluttertoast.showToast(
-                                        msg: "Kelas Berhasil Diedit",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.BOTTOM,
-                                        backgroundColor: Colors.green,
-                                        textColor: Colors.white,
-                                        fontSize: 14);
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: "Kelas Gagal Diedit",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.BOTTOM,
-                                        backgroundColor: Colors.red,
-                                        textColor: Colors.white,
-                                        fontSize: 14);
-                                  }
-                                }
-                              },
-                              child: const Text(
-                                'SAVE',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                              ),
-                            )
-                          ]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ));
   }
 }

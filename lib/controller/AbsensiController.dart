@@ -8,15 +8,6 @@ class AbsensiController {
     // Read the captured image file
     final imageBytes = await File(picture.path);
 
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-
     // Call postAbsensi to send the image and class ID
     var response = await ApiServices.postAbsensi(imageBytes, Kelas_Id);
 
@@ -88,5 +79,14 @@ class AbsensiController {
         ),
       );
     }
+  }
+
+  //Function Delete Absensi
+  //Function memanggil function deleteAbsensi berdasarkan mahasiswaId dari APIService dan return hasil response API
+  Future<dynamic> deleteAbsensi(int absensiId) async {
+    final response = await ApiServices.deleteAbsensi(absensiId);
+    print("DEBUG AbsensiController deleteAbsensi: " +
+        response.statusCode.toString());
+    return response;
   }
 }

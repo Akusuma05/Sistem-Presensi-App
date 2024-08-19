@@ -20,10 +20,6 @@ class _AbsensiCardState extends State<AbsensiCard> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
         child: InkWell(
-            // onTap: () {
-            //   Navigator.push(this.context,
-            //       MaterialPageRoute(builder: (context) => EditAbsensi()));
-            // },
             child: Container(
           padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
           child: Row(

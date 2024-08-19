@@ -73,125 +73,127 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
           ),
         ),
         width: double.infinity,
+        height: double.infinity,
         child: Container(
           padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //Form Edit Mahasiswa
-              Form(
-                child: Column(
-                  children: [
-                    // Text Field Nama Mahasiswa
-                    TextFormField(
-                      keyboardType: TextInputType.name,
-                      decoration: InputDecoration(
-                        labelText: "Mahasiswa Name",
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //Form Edit Mahasiswa
+                Form(
+                  child: Column(
+                    children: [
+                      // Text Field Nama Mahasiswa
+                      TextFormField(
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          labelText: "Mahasiswa Name",
+                        ),
+                        controller: ctrlName,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null,
                       ),
-                      controller: ctrlName,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) => value.toString().isEmpty
-                          ? 'Please fill in the blank!'
-                          : null,
-                    ),
 
-                    SizedBox(
-                      height: 16,
-                    ),
+                      SizedBox(
+                        height: 16,
+                      ),
 
-                    //Tombol Buka Kamera
-                    _buildOpenCameraButton(),
+                      //Tombol Buka Kamera
+                      _buildOpenCameraButton(),
 
-                    SizedBox(
-                      height: 16,
-                    ),
+                      SizedBox(
+                        height: 16,
+                      ),
 
-                    //Menampilkan Gambar Apabila Foto sudah diambil
-                    picture != null
-                        ? Container(
-                            height: MediaQuery.of(context).size.height *
-                                0.5, // 20% of screen height
-                            child: Image.file(
-                              File(picture!.path),
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : SizedBox(),
+                      //Menampilkan Gambar Apabila Foto sudah diambil
+                      picture != null
+                          ? Container(
+                              height: MediaQuery.of(context).size.height *
+                                  0.5, // 20% of screen height
+                              child: Image.file(
+                                File(picture!.path),
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : SizedBox(),
 
-                    SizedBox(
-                      height: 32,
-                    ),
+                      SizedBox(
+                        height: 32,
+                      ),
 
-                    //Tombol Submit
-                    ElevatedButton(
-                      onPressed: () {
-                        // Show loading indicator
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return Center(child: CircularProgressIndicator());
-                          },
-                        );
-                        if (ctrlName.text.toString() == "") {
+                      //Tombol Submit
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Show loading indicator
                           showDialog(
                             context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text("There is an Error!"),
-                              content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Please fill in the blanks!"),
-                                  ]),
-                            ),
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return Center(child: CircularProgressIndicator());
+                            },
                           );
-                        } else {
-                          if (mounted) {
-                            //Function Save Mahasiswa
-                            if (updateMahasiswa(
+                          if (ctrlName.text.toString() == "") {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text("There is an Error!"),
+                                content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text("Please fill in the blanks!"),
+                                    ]),
+                              ),
+                            );
+                          } else {
+                            if (mounted) {
+                              dynamic response = await updateMahasiswa(
                                   picture,
                                   ctrlName.text.toString(),
-                                  widget.mahasiswa.Mahasiswa_Id,
-                                ) !=
-                                null) {
-                              Navigator.pop(context);
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Homepage(key: UniqueKey())));
-                              Fluttertoast.showToast(
-                                  msg: "Mahasiswa Berhasil Diedit",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.BOTTOM,
-                                  backgroundColor: Colors.green,
-                                  textColor: Colors.white,
-                                  fontSize: 14);
-                            } else {
-                              Fluttertoast.showToast(
-                                  msg: "Edit Mahasiswa Gagal",
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.BOTTOM,
-                                  backgroundColor: Colors.red,
-                                  textColor: Colors.white,
-                                  fontSize: 14);
+                                  widget.mahasiswa.Mahasiswa_Id);
+                              //Function Save Mahasiswa
+                              if (response.statusCode == 200) {
+                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Homepage(key: UniqueKey())));
+                                Fluttertoast.showToast(
+                                    msg: "Mahasiswa Berhasil Diedit",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: Colors.green,
+                                    textColor: Colors.white,
+                                    fontSize: 14);
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Edit Mahasiswa Gagal",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                    fontSize: 14);
+                              }
                             }
                           }
-                        }
-                      },
-                      //Tombol Submit
-                      child: Text(
-                        'Submit',
-                        style: TextStyle(color: Colors.white),
+                        },
+                        //Tombol Submit
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                        ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -287,7 +289,6 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
       if (!mounted) {
         return;
       }
-      setState(() {});
     }).catchError((Object e) {
       if (e is CameraException) {
         switch (e.code) {

@@ -40,8 +40,8 @@ class MahasiswaController {
   }
 
   //Function Menambah Mahasiswa
-  Future<void> AddMahasiswaTombol(
-      XFile picture, String Nama_Mahasiswa, BuildContext context) async {
+  Future<dynamic> AddMahasiswaTombol(XFile picture, String mahasiswaNIM,
+      String mahasiswaNama, BuildContext context) async {
     // Read the captured image file
     final imageBytes = await File(picture.path);
 
@@ -55,7 +55,8 @@ class MahasiswaController {
     );
 
     // Call postAbsensi to send the image and class ID
-    var response = await ApiServices.postMahasiswa(imageBytes, Nama_Mahasiswa);
+    var response = await ApiServices.postMahasiswa(
+        imageBytes, mahasiswaNIM, mahasiswaNama);
 
     // Hide loading indicator
     Navigator.pop(context);

@@ -16,6 +16,194 @@ class _AddKelasState extends State<AddKelas> {
   List<ValueItem> SelectedMahasiswaList = [];
   List<Kelas> KelasBaru = [];
 
+  @override
+  void dispose() {
+    ctrlName.dispose();
+    ctrlLocation.dispose();
+    ctrlKelasIdVarchar.dispose();
+    SelectedMahasiswaList = [];
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    GetMahasiswa();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        //AppBar
+        appBar: _buildAppBar(),
+
+        //Body
+        body: _buildBottomSheet());
+  }
+
+  //Build UI App Bar
+  AppBar _buildAppBar() {
+    return AppBar(
+      //Tombol Back
+      leading: Builder(builder: (BuildContext context) {
+        return IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: new Icon(Icons.arrow_back_ios_rounded));
+      }),
+
+      //Judul AppBar
+      title: Text(
+        "Add Kelas",
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  //Build UI Bottom Sheet
+  Expanded _buildBottomSheet() {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          border: Border.all(color: Colors.transparent),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        width: double.infinity,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //Form Data Kelas
+                Form(
+                  child: Column(children: [
+                    //Text Field Class Name
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        labelText: "Kelas Id",
+                      ),
+                      controller: ctrlKelasIdVarchar,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null;
+                      },
+                    ),
+
+                    SizedBox(
+                      height: 16,
+                    ),
+
+                    FieldSelectMahasiswa(),
+
+                    SizedBox(
+                      height: 8,
+                    ),
+
+                    //Text Field Class Name
+                    TextFormField(
+                      keyboardType: TextInputType.name,
+                      decoration: InputDecoration(
+                        labelText: "Class Name",
+                      ),
+                      controller: ctrlName,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null;
+                      },
+                    ),
+
+                    SizedBox(
+                      height: 16,
+                    ),
+
+                    //Text Field Class Location
+                    TextFormField(
+                      keyboardType: TextInputType.name,
+                      decoration: InputDecoration(
+                        labelText: "Class Location",
+                      ),
+                      controller: ctrlLocation,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null;
+                      },
+                    ),
+
+                    SizedBox(
+                      height: 16,
+                    ),
+
+                    //Tombol Add
+                    ElevatedButton(
+                      onPressed: () {
+                        if (ctrlName.text.toString() == "" ||
+                            ctrlLocation.text.toString() == "" ||
+                            ctrlKelasIdVarchar.text.toString() == "") {
+                          showDialog(
+                              context: context,
+                              builder: ((((context) {
+                                return AlertDialog(
+                                  title: Text("There is an Error!"),
+                                  content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text("Please fill in the blanks!"),
+                                      ]),
+                                );
+                              }))));
+                        } else {
+                          if (InputKelas() != null) {
+                            Fluttertoast.showToast(
+                                msg: "Kelas Berhasil Ditambahkan",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.green,
+                                textColor: Colors.white,
+                                fontSize: 14);
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Penambahan Kelas Gagal",
+                                toastLength: Toast.LENGTH_LONG,
+                                gravity: ToastGravity.BOTTOM,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 14);
+                          }
+                        }
+                      },
+                      child: const Text(
+                        'ADD KELAS',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                      ),
+                    )
+                  ]),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //Build UI Select Mahasiswa
   Widget FieldSelectMahasiswa() {
     if (MahasiswaList.isEmpty) {
       return const Center(
@@ -39,192 +227,6 @@ class _AddKelasState extends State<AddKelas> {
         selectedOptionIcon: const Icon(Icons.check_circle),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    ctrlName.dispose();
-    ctrlLocation.dispose();
-    ctrlKelasIdVarchar.dispose();
-    SelectedMahasiswaList = [];
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    GetMahasiswa();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        //AppBar
-        appBar: AppBar(
-          //Tombol Back
-          leading: Builder(builder: (BuildContext context) {
-            return IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: new Icon(Icons.arrow_back_ios_rounded));
-          }),
-
-          //Judul AppBar
-          title: Text(
-            "Add Kelas",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
-
-        //Body
-        body: Column(
-          children: [
-            //Bottom Sheet
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  border: Border.all(color: Colors.transparent),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                ),
-                width: double.infinity,
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //Form Data Kelas
-                        Form(
-                          child: Column(children: [
-                            //Text Field Class Name
-                            TextFormField(
-                              keyboardType: TextInputType.text,
-                              decoration: InputDecoration(
-                                labelText: "Kelas Id",
-                              ),
-                              controller: ctrlKelasIdVarchar,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                return value.toString().isEmpty
-                                    ? 'Please fill in the blank!'
-                                    : null;
-                              },
-                            ),
-
-                            SizedBox(
-                              height: 16,
-                            ),
-
-                            FieldSelectMahasiswa(),
-
-                            SizedBox(
-                              height: 8,
-                            ),
-
-                            //Text Field Class Name
-                            TextFormField(
-                              keyboardType: TextInputType.name,
-                              decoration: InputDecoration(
-                                labelText: "Class Name",
-                              ),
-                              controller: ctrlName,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                return value.toString().isEmpty
-                                    ? 'Please fill in the blank!'
-                                    : null;
-                              },
-                            ),
-
-                            SizedBox(
-                              height: 16,
-                            ),
-
-                            //Text Field Class Location
-                            TextFormField(
-                              keyboardType: TextInputType.name,
-                              decoration: InputDecoration(
-                                labelText: "Class Location",
-                              ),
-                              controller: ctrlLocation,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                return value.toString().isEmpty
-                                    ? 'Please fill in the blank!'
-                                    : null;
-                              },
-                            ),
-
-                            SizedBox(
-                              height: 16,
-                            ),
-
-                            //Tombol Add
-                            ElevatedButton(
-                              onPressed: () {
-                                if (ctrlName.text.toString() == "" ||
-                                    ctrlLocation.text.toString() == "" ||
-                                    ctrlKelasIdVarchar.text.toString() == "") {
-                                  showDialog(
-                                      context: context,
-                                      builder: ((((context) {
-                                        return AlertDialog(
-                                          title: Text("There is an Error!"),
-                                          content: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                    "Please fill in the blanks!"),
-                                              ]),
-                                        );
-                                      }))));
-                                } else {
-                                  if (InputKelas() != null) {
-                                    Fluttertoast.showToast(
-                                        msg: "Kelas Berhasil Ditambahkan",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.BOTTOM,
-                                        backgroundColor: Colors.green,
-                                        textColor: Colors.white,
-                                        fontSize: 14);
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: "Penambahan Kelas Gagal",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.BOTTOM,
-                                        backgroundColor: Colors.red,
-                                        textColor: Colors.white,
-                                        fontSize: 14);
-                                  }
-                                }
-                              },
-                              child: const Text(
-                                'ADD KELAS',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                              ),
-                            )
-                          ]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ));
   }
 
   //Function Input Kelas

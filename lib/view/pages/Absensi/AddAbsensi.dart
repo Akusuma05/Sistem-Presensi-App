@@ -43,6 +43,14 @@ class _AddAbsensiState extends State<AddAbsensi> with WidgetsBindingObserver {
               backgroundColor: Colors.white,
               child: const Icon(Icons.camera_alt),
               onPressed: () async {
+                // Show loading indicator
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return Center(child: CircularProgressIndicator());
+                  },
+                );
                 //Kirim Gambar ke API untuk Absensi
                 XFile? image = await cameraController.takePicture();
                 await absensiController.AddAbsensiButton(
