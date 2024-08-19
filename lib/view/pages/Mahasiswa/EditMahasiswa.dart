@@ -65,142 +65,138 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
   Padding _buildBottomSheet() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-      child: Expanded(
-        child: Container(
-          //Bottom Sheet
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.transparent),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
+      child: Container(
+        //Bottom Sheet
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.transparent),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
           ),
-          width: double.infinity,
-          height: double.infinity,
-          child: Container(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //Form Edit Mahasiswa
-                  Form(
-                    child: Column(
-                      children: [
-                        // Text Field Nama Mahasiswa
-                        TextFormField(
-                          keyboardType: TextInputType.name,
-                          decoration: InputDecoration(
-                            labelText: "Mahasiswa Name",
-                          ),
-                          controller: ctrlName,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) => value.toString().isEmpty
-                              ? 'Please fill in the blank!'
-                              : null,
+        ),
+        width: double.infinity,
+        height: double.infinity,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //Form Edit Mahasiswa
+                Form(
+                  child: Column(
+                    children: [
+                      // Text Field Nama Mahasiswa
+                      TextFormField(
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          labelText: "Mahasiswa Name",
                         ),
+                        controller: ctrlName,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null,
+                      ),
 
-                        SizedBox(
-                          height: 16,
-                        ),
+                      SizedBox(
+                        height: 16,
+                      ),
 
-                        //Tombol Buka Kamera
-                        _buildOpenCameraButton(),
+                      //Tombol Buka Kamera
+                      _buildOpenCameraButton(),
 
-                        SizedBox(
-                          height: 16,
-                        ),
+                      SizedBox(
+                        height: 16,
+                      ),
 
-                        //Menampilkan Gambar Apabila Foto sudah diambil
-                        picture != null
-                            ? Container(
-                                height: MediaQuery.of(context).size.height *
-                                    0.5, // 20% of screen height
-                                child: Image.file(
-                                  File(picture!.path),
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : SizedBox(),
+                      //Menampilkan Gambar Apabila Foto sudah diambil
+                      picture != null
+                          ? Container(
+                              height: MediaQuery.of(context).size.height *
+                                  0.5, // 20% of screen height
+                              child: Image.file(
+                                File(picture!.path),
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : SizedBox(),
 
-                        SizedBox(
-                          height: 32,
-                        ),
+                      SizedBox(
+                        height: 32,
+                      ),
 
-                        //Tombol Submit
-                        ElevatedButton(
-                          onPressed: () async {
-                            // Show loading indicator
+                      //Tombol Submit
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Show loading indicator
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return Center(child: CircularProgressIndicator());
+                            },
+                          );
+                          if (ctrlName.text.toString() == "") {
                             showDialog(
                               context: context,
-                              barrierDismissible: false,
-                              builder: (BuildContext context) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              },
+                              builder: (context) => AlertDialog(
+                                title: Text("There is an Error!"),
+                                content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text("Please fill in the blanks!"),
+                                    ]),
+                              ),
                             );
-                            if (ctrlName.text.toString() == "") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text("There is an Error!"),
-                                  content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text("Please fill in the blanks!"),
-                                      ]),
-                                ),
-                              );
-                            } else {
-                              if (mounted) {
-                                dynamic response = await updateMahasiswa(
-                                    picture,
-                                    ctrlName.text.toString(),
-                                    widget.mahasiswa.Mahasiswa_Id);
-                                //Function Save Mahasiswa
-                                if (response.statusCode == 200) {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              Homepage(key: UniqueKey())));
-                                  Fluttertoast.showToast(
-                                      msg: "Mahasiswa Berhasil Diedit",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.BOTTOM,
-                                      backgroundColor: Colors.green,
-                                      textColor: Colors.white,
-                                      fontSize: 14);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: "Edit Mahasiswa Gagal",
-                                      toastLength: Toast.LENGTH_LONG,
-                                      gravity: ToastGravity.BOTTOM,
-                                      backgroundColor: Colors.red,
-                                      textColor: Colors.white,
-                                      fontSize: 14);
-                                }
+                          } else {
+                            if (mounted) {
+                              dynamic response = await updateMahasiswa(
+                                  picture,
+                                  ctrlName.text.toString(),
+                                  widget.mahasiswa.Mahasiswa_Id);
+                              //Function Save Mahasiswa
+                              if (response.statusCode == 200) {
+                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            Homepage(key: UniqueKey())));
+                                Fluttertoast.showToast(
+                                    msg: "Mahasiswa Berhasil Diedit",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: Colors.green,
+                                    textColor: Colors.white,
+                                    fontSize: 14);
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: "Edit Mahasiswa Gagal",
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                    fontSize: 14);
                               }
                             }
-                          },
-                          //Tombol Submit
-                          child: Text(
-                            'Submit',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xffACC196),
-                          ),
+                          }
+                        },
+                        //Tombol Submit
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
                         ),
-                      ],
-                    ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xffACC196),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

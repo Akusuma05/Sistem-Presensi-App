@@ -57,7 +57,8 @@ class _MahasiswaDetailsState extends State<MahasiswaDetails> {
   Padding _buildBottomSheet() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-      child: Expanded(
+      child: Container(
+        height: double.infinity,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
