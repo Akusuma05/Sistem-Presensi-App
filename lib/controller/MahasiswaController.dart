@@ -21,18 +21,18 @@ class MahasiswaController {
 
   //Function Update Mahasiswa
   //Function memanggil function updateMahasiswa untuk update mahasiswaFoto, mahasiswaNama, mahasiswaId berdasarkan mahasiswaId dari APIService dan return hasil response API
-  Future<dynamic> updateMahasiswa(
-      XFile? mahasiswaFoto, String mahasiswaNama, int mahasiswaId) async {
+  Future<dynamic> updateMahasiswa(XFile? mahasiswaFoto, String mahasiswaNama,
+      int mahasiswaId, int mahasiswaNIM) async {
     if (mahasiswaFoto == null) {
-      final response =
-          await ApiServices.updateMahasiswa(null, mahasiswaNama, mahasiswaId);
+      final response = await ApiServices.updateMahasiswa(
+          null, mahasiswaNama, mahasiswaId, mahasiswaNIM);
       print("DEBUG MahasiswaController updateMahasiswa: " +
           response.statusCode.toString());
       return response;
     } else {
       final fileFoto = await File(mahasiswaFoto.path);
       final response = await ApiServices.updateMahasiswa(
-          fileFoto, mahasiswaNama, mahasiswaId);
+          fileFoto, mahasiswaNama, mahasiswaId, mahasiswaNIM);
       print("DEBUG MahasiswaController updateMahasiswa: " +
           response.statusCode.toString());
       return response;

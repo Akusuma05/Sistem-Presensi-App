@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:sistem_presensi_app/model/Absensi.dart';
 import 'package:sistem_presensi_app/model/Kelas.dart';
 import 'package:sistem_presensi_app/model/KelasMahasiswa.dart';
@@ -66,14 +67,23 @@ class ApiServices {
   }
 
   //Create Kelas
-  static Future<List<Kelas>> setKelas(
-      String Kelas_Nama, String Kelas_Lokasi, String Kelas_Id_varchar) async {
+  static Future<List<Kelas>> setKelas(String Kelas_Nama, String Kelas_Lokasi,
+      String Kelas_Id_varchar, DateTime Jam_Mulai, DateTime Jam_Selesai) async {
     var url = Uri.http(Const.baseUrl, "/api/Kelas");
     var request = MultipartRequest('POST', url);
+
+    var Jam_Mulai_Tanpa_Tanggal = DateFormat.Hms().format(Jam_Mulai);
+    var Jam_Selesai_Tanpa_Tanggal = DateFormat.Hms().format(Jam_Selesai);
+    print(
+        'DEBUG APIService setKelas: "Jam_Mulai_Tanpa_Tanggal is $Jam_Mulai_Tanpa_Tanggal"');
+    print(
+        'DEBUG APIService setKelas: "Jam_Selesai_Tanpa_Tanggal is $Jam_Selesai_Tanpa_Tanggal"');
 
     request.fields['Kelas_Nama'] = Kelas_Nama.toString();
     request.fields['Kelas_Lokasi'] = Kelas_Lokasi.toString();
     request.fields['Kelas_Id_varchar'] = Kelas_Id_varchar.toString();
+    request.fields['Jam_Mulai'] = Jam_Mulai_Tanpa_Tanggal.toString();
+    request.fields['Jam_Selesai'] = Jam_Selesai_Tanpa_Tanggal.toString();
 
     // Send the request and decode response
     var response = await request.send();
@@ -83,23 +93,40 @@ class ApiServices {
       final kelasList = decodedData.map((data) {
         return Kelas.fromJson(data as Map<String, dynamic>);
       }).toList();
+
+      print('DEBUG APIService setKelas: "Kelas added successfully."');
       return kelasList;
     } else {
       // Handle error based on status code
-      throw Exception('Failed to create Kelas: ${response.statusCode}');
+      print('DEBUG APIService deleteKelas: Failed to Add Kelas response Code:' +
+          response.statusCode.toString());
+      return [];
     }
   }
 
-  static Future<dynamic> updateKelas(int Kelas_Id, String Kelas_Nama,
-      String Kelas_Lokasi, String Kelas_Id_varchar) async {
+  static Future<dynamic> updateKelas(
+      int Kelas_Id,
+      String Kelas_Nama,
+      String Kelas_Lokasi,
+      String Kelas_Id_varchar,
+      DateTime Jam_Mulai,
+      DateTime Jam_Selesai) async {
     var url =
         Uri.http(Const.baseUrl, "/api/Kelas/$Kelas_Id"); // Add ID to the URL
 
+    var Jam_Mulai_Tanpa_Tanggal = DateFormat.Hms().format(Jam_Mulai);
+    var Jam_Selesai_Tanpa_Tanggal = DateFormat.Hms().format(Jam_Selesai);
+    print(
+        'DEBUG APIService updateKelas: "Jam_Mulai_Tanpa_Tanggal is $Jam_Mulai_Tanpa_Tanggal"');
+    print(
+        'DEBUG APIService updateKelas: "Jam_Selesai_Tanpa_Tanggal is $Jam_Selesai_Tanpa_Tanggal"');
     // Prepare JSON data
     var data = json.encode({
       'Kelas_Nama': Kelas_Nama,
       'Kelas_Lokasi': Kelas_Lokasi,
-      'Kelas_Id_varchar': Kelas_Id_varchar
+      'Kelas_Id_varchar': Kelas_Id_varchar,
+      'Jam_Mulai': Jam_Mulai_Tanpa_Tanggal,
+      'Jam_Selesai': Jam_Selesai_Tanpa_Tanggal
     });
 
     // Create a PUT request with raw body
@@ -180,7 +207,7 @@ class ApiServices {
     var url = Uri.http(Const.baseUrl, "/api/Mahasiswa");
     var request = MultipartRequest('POST', url);
 
-    request.fields['Mahasiswa_Id'] = mahasiswaNIM.toString();
+    request.fields['Mahasiswa_NIM'] = mahasiswaNIM.toString();
     request.fields['Mahasiswa_Nama'] = mahasiswaNama.toString();
 
     // Add image as multipart file
@@ -200,14 +227,15 @@ class ApiServices {
   }
 
   //Update Mahasiswa
-  static Future<dynamic> updateMahasiswa(
-      File? mahasiswaFoto, String mahasiswaNama, int mahasiswaId) async {
+  static Future<dynamic> updateMahasiswa(File? mahasiswaFoto,
+      String mahasiswaNama, int mahasiswaId, int mahasiswaNIM) async {
     var url = Uri.http(Const.baseUrl, "/api/Mahasiswa/$mahasiswaId");
 
     var request = MultipartRequest('POST', url);
 
     request.headers['X-HTTP-Method-Override'] = 'PUT';
 
+    request.fields['Mahasiswa_NIM'] = mahasiswaNIM.toString();
     request.fields['Mahasiswa_Nama'] = mahasiswaNama.toString();
 
     if (mahasiswaFoto != null) {
@@ -220,11 +248,11 @@ class ApiServices {
     var finalResponse = await http.Response.fromStream(response);
     if (finalResponse.statusCode == 200) {
       print(
-          'DEBUG APIService updateMahasiswa: "Mahasiswa with Id $mahasiswaId updated successfully."');
+          'DEBUG APIService updateMahasiswa: "Mahasiswa with Id $mahasiswaNIM updated successfully."');
       return finalResponse;
     } else {
       print(
-          'DEBUG APIService deleteMahasiswa: Failed to delete Mahasiswa with ID $mahasiswaId response Code:' +
+          'DEBUG APIService deleteMahasiswa: Failed to delete Mahasiswa with ID $mahasiswaNIM response Code:' +
               finalResponse.statusCode.toString() +
               '\n response body:' +
               finalResponse.body);

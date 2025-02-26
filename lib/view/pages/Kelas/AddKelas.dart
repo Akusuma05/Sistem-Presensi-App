@@ -15,6 +15,8 @@ class _AddKelasState extends State<AddKelas> {
   List<Mahasiswa> MahasiswaList = [];
   List<ValueItem> SelectedMahasiswaList = [];
   List<Kelas> KelasBaru = [];
+  DateTime JamMulai = DateTime.now();
+  DateTime JamSelesai = DateTime.now();
 
   @override
   void dispose() {
@@ -154,6 +156,40 @@ class _AddKelasState extends State<AddKelas> {
                         height: 16,
                       ),
 
+                      Row(
+                        children: [
+                          Text("Jam Mulai: "),
+                          TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.time,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              JamMulai = dateTime;
+                            },
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: 16,
+                      ),
+
+                      Row(
+                        children: [
+                          Text("Jam Selesai: "),
+                          TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.time,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              JamSelesai = dateTime;
+                            },
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: 16,
+                      ),
+
                       //Tombol Add
                       ElevatedButton(
                         onPressed: () async {
@@ -243,8 +279,12 @@ class _AddKelasState extends State<AddKelas> {
   //Function Input Kelas
   Future<dynamic> InputKelas() async {
     dynamic success = true;
-    await ApiServices.setKelas(ctrlName.text.toString(),
-            ctrlLocation.text.toString(), ctrlKelasIdVarchar.text.toString())
+    await ApiServices.setKelas(
+            ctrlName.text.toString(),
+            ctrlLocation.text.toString(),
+            ctrlKelasIdVarchar.text.toString(),
+            JamMulai,
+            JamSelesai)
         .then((value) async {
       // mark this function as async
       SelectedMahasiswaList = ctrlMahasiswa.selectedOptions;

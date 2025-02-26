@@ -44,7 +44,7 @@ class _MahasiswaDetailsState extends State<MahasiswaDetails> {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           Text(
-            widget.mahasiswa.Mahasiswa_Id.toString(),
+            widget.mahasiswa.Mahasiswa_NIM.toString(),
             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
           ),
         ],

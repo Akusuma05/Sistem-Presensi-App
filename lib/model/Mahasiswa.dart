@@ -1,10 +1,12 @@
 class Mahasiswa {
   int Mahasiswa_Id;
+  int Mahasiswa_NIM;
   String Mahasiswa_Nama;
   String Mahasiswa_Foto;
 
   Mahasiswa({
     required this.Mahasiswa_Id,
+    required this.Mahasiswa_NIM,
     required this.Mahasiswa_Nama,
     required this.Mahasiswa_Foto,
   });
@@ -13,6 +15,7 @@ class Mahasiswa {
     try {
       return Mahasiswa(
         Mahasiswa_Id: json['Mahasiswa_Id'] as int,
+        Mahasiswa_NIM: json['Mahasiswa_NIM'] as int,
         Mahasiswa_Nama: json['Mahasiswa_Nama'] as String,
         Mahasiswa_Foto: json['Mahasiswa_Foto'] as String,
       );

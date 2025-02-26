@@ -111,6 +111,22 @@ class _KelasViewState extends State<KelasView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //Search Bar
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Jam Mulai: ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(widget.kelas.Jam_Mulai),
+                    SizedBox(
+                      width: 16,
+                    ),
+                    Text("Jam Selesai: ",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(widget.kelas.Jam_Selesai),
+                  ],
+                ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
                   child: SizedBox(

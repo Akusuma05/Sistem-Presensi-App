@@ -21,6 +21,9 @@ class _EditKelasState extends State<EditKelas> {
   List<Mahasiswa> MahasiswaList = [];
   List<KelasMahasiswa> KelasMahasiswaList = [];
 
+  DateTime JamMulai = DateTime.now();
+  DateTime JamSelesai = DateTime.now();
+
   @override
   void dispose() {
     ctrlName.dispose();
@@ -159,6 +162,40 @@ class _EditKelasState extends State<EditKelas> {
                         height: 16,
                       ),
 
+                      Row(
+                        children: [
+                          Text("Jam Mulai: "),
+                          TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.time,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              JamMulai = dateTime;
+                            },
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: 16,
+                      ),
+
+                      Row(
+                        children: [
+                          Text("Jam Selesai: "),
+                          TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.time,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              JamSelesai = dateTime;
+                            },
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: 16,
+                      ),
+
                       ElevatedButton(
                         onPressed: () async {
                           if (ctrlName.text.toString() == "" ||
@@ -183,7 +220,9 @@ class _EditKelasState extends State<EditKelas> {
                                 ctrlLocation.text.toString(),
                                 ctrlKelasIdvarchar.text.toString(),
                                 selectedmahasiswaList,
-                                mahasiswaSelectController.selectedOptions);
+                                mahasiswaSelectController.selectedOptions,
+                                JamMulai,
+                                JamSelesai);
                             if (response == true) {
                               Fluttertoast.showToast(
                                   msg: "Kelas Berhasil Diedit",
@@ -256,9 +295,11 @@ class _EditKelasState extends State<EditKelas> {
       String Kelas_Lokasi,
       String Kelas_Id_varchar,
       List<Mahasiswa> selectedMahasiswaList,
-      List<ValueItem> selectedMahasiswaListBaru) async {
-    dynamic response = await ApiServices.updateKelas(
-        Kelas_Id, Kelas_Nama, Kelas_Lokasi, Kelas_Id_varchar);
+      List<ValueItem> selectedMahasiswaListBaru,
+      DateTime Jam_Mulai,
+      DateTime Jam_Selesai) async {
+    dynamic response = await ApiServices.updateKelas(Kelas_Id, Kelas_Nama,
+        Kelas_Lokasi, Kelas_Id_varchar, Jam_Mulai, Jam_Selesai);
     dynamic responseKelasMahasiswa = await compareAndDeleteKelasMahasiswa(
         selectedMahasiswaList, selectedMahasiswaListBaru);
     // Create a new GlobalKey

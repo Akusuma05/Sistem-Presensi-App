@@ -53,6 +53,7 @@ dependencies:
   open_file: ^3.3.2
   path: ^1.9.0
   image: ^4.2.0
+  time_picker_spinner_pop_up: ^2.0.0
   
 
 dev_dependencies:

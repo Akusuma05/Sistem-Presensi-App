@@ -10,6 +10,7 @@ class EditMahasiswa extends StatefulWidget {
 
 class _EditMahasiswaState extends State<EditMahasiswa> {
   final ctrlName = TextEditingController();
+  final ctrlNIM = TextEditingController();
   late CameraController cameraController;
   MahasiswaController mahasiswaController = MahasiswaController();
   bool showCameraPreview = false;
@@ -18,6 +19,7 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
   @override
   void initState() {
     ctrlName.text = widget.mahasiswa.Mahasiswa_Nama;
+    ctrlNIM.text = widget.mahasiswa.Mahasiswa_NIM.toString();
     initCamera();
     super.initState();
   }
@@ -89,6 +91,23 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
                     children: [
                       // Text Field Nama Mahasiswa
                       TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: "Mahasiswa NIM",
+                        ),
+                        controller: ctrlNIM,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (value) => value.toString().isEmpty
+                            ? 'Please fill in the blank!'
+                            : null,
+                      ),
+
+                      SizedBox(
+                        height: 16,
+                      ),
+
+                      // Text Field Nama Mahasiswa
+                      TextFormField(
                         keyboardType: TextInputType.name,
                         decoration: InputDecoration(
                           labelText: "Mahasiswa Name",
@@ -155,7 +174,8 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
                               dynamic response = await updateMahasiswa(
                                   picture,
                                   ctrlName.text.toString(),
-                                  widget.mahasiswa.Mahasiswa_Id);
+                                  widget.mahasiswa.Mahasiswa_Id,
+                                  int.parse(ctrlNIM.text.toString()));
                               //Function Save Mahasiswa
                               if (response.statusCode == 200) {
                                 Navigator.pop(context);
@@ -323,10 +343,10 @@ class _EditMahasiswaState extends State<EditMahasiswa> {
 
   //Update Mahasiswa
   //Function untuk memanggil hasil response dari MahasiswaController dengan mahasiswaFoto, mahasiswaNama, mahasiswaId
-  Future<dynamic> updateMahasiswa(
-      XFile? mahasiswaFoto, String mahasiswaNama, int mahasiswaId) async {
+  Future<dynamic> updateMahasiswa(XFile? mahasiswaFoto, String mahasiswaNama,
+      int mahasiswaId, int mahasiswaNIM) async {
     dynamic response = await mahasiswaController.updateMahasiswa(
-        mahasiswaFoto, mahasiswaNama, mahasiswaId);
+        mahasiswaFoto, mahasiswaNama, mahasiswaId, mahasiswaNIM);
     print("DEBUG EditMahasiswa updateMahasiswa: " +
         response.statusCode.toString());
     return response;
